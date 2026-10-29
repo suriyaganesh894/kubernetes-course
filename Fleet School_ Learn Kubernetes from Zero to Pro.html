@@ -1,0 +1,2630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fleet School: Learn Kubernetes from Zero to Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F8; --surface:#FFFFFF; --surface-2:#F4F8FA; --ink:#141E3C; --muted:#4F6577; --line:#C9D7E0;
+  --rust:#D9480F; --rust-soft:#FFE3D3; --teal:#2453C4; --teal-soft:#DDE6FA; --sun:#E9A10B; --sun-soft:#FFF1C7;
+  --green:#2B8A3E; --green-soft:#DDF5E1; --red:#C92A2A; --red-soft:#FFE0E0; --plum:#7048B6; --plum-soft:#ECE3FA;
+  --code-bg:#15204A; --code-ink:#E6F0F5; --code-muted:#8FB3C7; --shadow:0 1px 0 rgba(15,42,61,.06), 0 6px 20px -12px rgba(15,42,61,.35);
+  --on-accent:#FFFFFF;
+  --display:"Fredoka", "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", Verdana, system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1222; --surface:#141C33; --surface-2:#1B2541; --ink:#E4EEF3; --muted:#9DB4C3; --line:#2B3A60;
+    --rust:#FF8A4C; --rust-soft:#3D2216; --teal:#86A8FF; --teal-soft:#18284D; --sun:#F7C64B; --sun-soft:#3A3014;
+    --green:#5FD27A; --green-soft:#133A21; --red:#FF7B7B; --red-soft:#3F1A1A; --plum:#B596F2; --plum-soft:#2C2145;
+    --code-bg:#06121A; --code-ink:#E6F0F5; --code-muted:#7FA2B6; --on-accent:#0B1A24; --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.8);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1222; --surface:#141C33; --surface-2:#1B2541; --ink:#E4EEF3; --muted:#9DB4C3; --line:#2B3A60;
+  --rust:#FF8A4C; --rust-soft:#3D2216; --teal:#86A8FF; --teal-soft:#18284D; --sun:#F7C64B; --sun-soft:#3A3014;
+  --green:#5FD27A; --green-soft:#133A21; --red:#FF7B7B; --red-soft:#3F1A1A; --plum:#B596F2; --plum-soft:#2C2145;
+  --code-bg:#06121A; --code-ink:#E6F0F5; --code-muted:#7FA2B6; --on-accent:#0B1A24; --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.8);
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 76px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.65}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--surface)}
+img,svg{max-width:100%}
+a{color:var(--teal)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:6px}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.2;margin:1.6em 0 .5em;font-weight:600}
+h2{font-size:clamp(1.7rem,4vw,2.3rem)} h3{font-size:1.35rem} h4{font-size:1.1rem}
+p{margin:.7em 0}
+code{font-family:var(--mono);font-size:.86em;background:var(--surface-2);border:1px solid var(--line);padding:.08em .38em;border-radius:5px}
+kbd{font-family:var(--mono);font-size:.82em;border:1px solid var(--line);border-bottom-width:3px;border-radius:6px;padding:0 .4em;background:var(--surface)}
+
+/* Top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;display:flex;align-items:center;gap:12px;padding:10px 18px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{font-family:var(--display);font-weight:700;font-size:1.25rem;display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand-mark{width:30px;height:30px;border-radius:50%;border:3px solid var(--teal);background:radial-gradient(circle,var(--rust) 0 5px,transparent 6px),conic-gradient(var(--teal-soft) 0 25%,transparent 0 50%,var(--teal-soft) 0 75%,transparent 0)}
+.topbar .spacer{flex:1}
+.progress-pill{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.progress-track{width:120px;height:8px;border-radius:99px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.progress-fill{height:100%;width:0;background:var(--teal);transition:width .4s}
+.icon-btn{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer}
+.icon-btn:hover{border-color:var(--teal)}
+#menuBtn{display:none}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 57px);height:calc(100vh - 57px - env(safe-area-inset-top,0px));overflow:auto;padding:18px 14px 40px;border-right:1px solid var(--line);background:var(--surface)}
+.sidebar h5{font-family:var(--display);font-size:.95rem;font-weight:600;color:var(--muted);margin:18px 8px 6px}
+.sidebar a{display:flex;gap:10px;align-items:baseline;padding:6px 8px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:.93rem;line-height:1.35}
+.sidebar a:hover{background:var(--surface-2)}
+.sidebar a .n{font-family:var(--mono);font-size:.75rem;color:var(--muted);min-width:22px}
+.sidebar a.done .n{color:var(--green)}
+.sidebar a.done::after{content:"✓";margin-left:auto;color:var(--green);font-weight:700}
+.sidebar a.active{background:var(--teal-soft)}
+main{min-width:0;padding:0 clamp(16px,4vw,48px) 80px}
+.wrap{max-width:860px;margin:0 auto}
+
+/* Hero */
+.hero{max-width:860px;margin:0 auto;padding:46px 0 10px}
+.hero h1{font-size:clamp(2.3rem,6.5vw,4.2rem);margin:.2em 0 .25em;font-weight:700;letter-spacing:-.01em;line-height:1.02}
+.hero p.lead{font-size:1.2rem;max-width:62ch;color:var(--muted)}
+.hero-ship{width:100%;height:auto;display:block;margin:10px 0 4px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 8px}
+.btn{font:inherit;font-family:var(--display);font-weight:600;font-size:1rem;border-radius:12px;padding:11px 18px;border:2px solid var(--ink);background:var(--ink);color:var(--surface);cursor:pointer;text-decoration:none;display:inline-block}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{transform:translateY(-1px)}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:26px 0}
+.level{border-radius:14px;padding:16px 18px;border:2px solid var(--line);background:var(--surface)}
+.level b{font-family:var(--display);font-size:1.15rem;display:block}
+.level span{color:var(--muted);font-size:.93rem}
+.level.l1{border-color:var(--teal)} .level.l2{border-color:var(--sun)} .level.l3{border-color:var(--rust)}
+
+/* Lesson */
+.lesson{border-top:2px dashed var(--line);padding-top:30px;margin-top:56px}
+.lesson-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.lesson-no{font-family:var(--display);font-weight:700;font-size:1.05rem;min-width:56px;height:44px;padding:0 10px;border-radius:6px;display:grid;place-items:center;color:var(--on-accent);background:var(--teal);box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.lesson[data-level="2"] .lesson-no{background:var(--sun);color:#3a2a00}
+.lesson[data-level="3"] .lesson-no{background:var(--rust)}
+.lesson-head h2{margin:0;flex:1;min-width:240px}
+.lesson-meta{color:var(--muted);font-size:.92rem;margin-top:6px}
+.goal{margin:16px 0;padding:12px 16px;border-left:4px solid var(--teal);background:var(--surface);border-radius:0 10px 10px 0}
+
+.eli5{position:relative;background:var(--sun-soft);border:2px solid var(--sun);border-radius:16px;padding:16px 20px 14px 20px;margin:22px 0}
+.eli5 .tag{font-family:var(--display);font-weight:600;font-size:1.05rem;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.eli5 .tag::before{content:"🧸";font-size:1.4rem}
+.pro{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:6px 22px 12px;margin:22px 0;box-shadow:var(--shadow)}
+.pro > .tag{font-family:var(--display);font-weight:600;font-size:1.05rem;margin-top:12px;display:flex;align-items:center;gap:8px}
+.pro > .tag::before{content:"🛠️"}
+.tip,.warn,.note{border-radius:12px;padding:10px 16px;margin:16px 0;font-size:.97rem}
+.tip{background:var(--green-soft);border:1px solid var(--green)}
+.tip::before{content:"💡 Tip: ";font-weight:700}
+.warn{background:var(--red-soft);border:1px solid var(--red)}
+.warn::before{content:"⚠️ Careful: ";font-weight:700}
+.note{background:var(--plum-soft);border:1px solid var(--plum)}
+.note::before{content:"📝 Note: ";font-weight:700}
+
+figure.diagram{margin:24px 0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+figure.diagram .scroll{overflow-x:auto}
+figure.diagram svg{display:block;margin:0 auto;min-width:560px;height:auto}
+figcaption{font-size:.9rem;color:var(--muted);text-align:center;margin-top:6px}
+
+/* Terminal */
+.term{position:relative;margin:14px 0;border-radius:12px;background:var(--code-bg);color:var(--code-ink);overflow:hidden;border:1px solid var(--line)}
+.term .bar{display:flex;align-items:center;gap:6px;padding:7px 12px;background:rgba(255,255,255,.06);font-size:.78rem;color:var(--code-muted);font-family:var(--mono)}
+.term .bar i{width:10px;height:10px;border-radius:50%;background:#ff6b6b;display:inline-block}
+.term .bar i:nth-child(2){background:#ffd43b} .term .bar i:nth-child(3){background:#51cf66}
+.term .bar span{margin-left:8px}
+.term pre{margin:0;padding:14px 16px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.6}
+.term .c{color:var(--code-muted)} .term .p{color:#7dd3fc} .term .k{color:#fbbf24} .term .s{color:#86efac} .term .o{color:#cbd5e1;opacity:.85}
+.copy{position:absolute;top:5px;right:8px;font:inherit;font-size:.75rem;font-family:var(--mono);background:rgba(255,255,255,.1);color:var(--code-ink);border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:3px 9px;cursor:pointer}
+.copy:hover{background:rgba(255,255,255,.2)}
+
+/* Lab */
+.lab{border:2px solid var(--teal);border-radius:16px;margin:26px 0;background:var(--surface);overflow:hidden}
+.lab > .lab-head{background:var(--teal);color:var(--on-accent);padding:10px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem;display:flex;gap:8px;align-items:center}
+.lab > .lab-head::before{content:"🧪"}
+.lab > .lab-body{padding:6px 20px 16px}
+.lab ol.steps{counter-reset:s;list-style:none;padding:0;margin:10px 0}
+.lab ol.steps > li{counter-increment:s;position:relative;padding-left:44px;margin:16px 0}
+.lab ol.steps > li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:8px;background:var(--teal-soft);color:var(--teal);font-family:var(--display);font-weight:700;display:grid;place-items:center}
+details.solution{margin:12px 0;border:1px dashed var(--line);border-radius:10px;padding:8px 14px;background:var(--surface-2)}
+details.solution summary{cursor:pointer;font-weight:700;font-family:var(--display)}
+.challenge{background:var(--plum-soft);border-radius:12px;padding:10px 16px;margin:14px 0}
+.challenge::before{content:"🏆 Bonus challenge: ";font-weight:700}
+
+/* Tables */
+.table-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--surface)}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--surface-2);font-family:var(--display);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+/* Takeaways */
+.takeaways{background:var(--teal-soft);border-radius:16px;padding:6px 20px 10px;margin:24px 0}
+.takeaways h4{margin:.8em 0 .3em}
+.takeaways ul{margin:.3em 0;padding-left:1.2em}
+
+/* Quiz */
+.quiz{border:2px solid var(--plum);border-radius:16px;background:var(--surface);margin:26px 0;overflow:hidden}
+.quiz-head{background:var(--plum);color:var(--on-accent);padding:10px 18px;font-family:var(--display);font-weight:600;font-size:1.1rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.quiz-body{padding:8px 20px 18px}
+.q{margin:16px 0 20px}
+.q .qt{font-weight:700;margin-bottom:8px}
+.q .opts{display:grid;gap:8px}
+.opt{font:inherit;text-align:left;padding:10px 14px;border-radius:10px;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--plum)}
+.opt.right{border-color:var(--green);background:var(--green-soft)}
+.opt.wrong{border-color:var(--red);background:var(--red-soft)}
+.opt:disabled{cursor:default}
+.explain{margin-top:8px;font-size:.95rem;padding:8px 12px;border-radius:8px;background:var(--surface-2);display:none}
+.explain.show{display:block}
+.quiz-score{font-family:var(--display);font-weight:600;padding:10px 14px;border-radius:10px;background:var(--plum-soft);display:none}
+.quiz-score.show{display:block}
+
+.done-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:22px 0 0}
+.mark-done{font:inherit;font-family:var(--display);font-weight:600;border-radius:12px;padding:10px 16px;border:2px solid var(--green);background:transparent;color:var(--green);cursor:pointer}
+.mark-done.is-done{background:var(--green);color:var(--on-accent)}
+.nav-next{margin-left:auto;font-family:var(--display);font-weight:600;text-decoration:none}
+
+/* SVG diagram tokens */
+.d-box{fill:var(--surface-2);stroke:var(--line);stroke-width:2}
+.d-teal{fill:var(--teal-soft);stroke:var(--teal);stroke-width:2}
+.d-rust{fill:var(--rust-soft);stroke:var(--rust);stroke-width:2}
+.d-sun{fill:var(--sun-soft);stroke:var(--sun);stroke-width:2}
+.d-green{fill:var(--green-soft);stroke:var(--green);stroke-width:2}
+.d-red{fill:var(--red-soft);stroke:var(--red);stroke-width:2}
+.d-plum{fill:var(--plum-soft);stroke:var(--plum);stroke-width:2}
+.d-ink{fill:var(--ink)}
+.d-solid-teal{fill:var(--teal)} .d-solid-rust{fill:var(--rust)} .d-solid-sun{fill:var(--sun)} .d-solid-green{fill:var(--green)} .d-solid-plum{fill:var(--plum)} .d-solid-red{fill:var(--red)}
+.t{fill:var(--ink);font-family:var(--body);font-size:14px}
+.t-b{fill:var(--ink);font-family:var(--display);font-size:15px;font-weight:600}
+.t-s{fill:var(--muted);font-family:var(--body);font-size:12px}
+.t-m{fill:var(--ink);font-family:var(--mono);font-size:12px}
+.t-w{fill:var(--on-accent);font-family:var(--display);font-size:14px;font-weight:600}
+.ln{stroke:var(--muted);stroke-width:2;fill:none}
+.ln-teal{stroke:var(--teal);stroke-width:2.5;fill:none}
+.ln-rust{stroke:var(--rust);stroke-width:2.5;fill:none}
+.flow{stroke-dasharray:7 7;animation:dash 1.1s linear infinite}
+.arrowhead{fill:var(--muted)}
+@keyframes dash{to{stroke-dashoffset:-28}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pop{0%,15%{opacity:0;transform:scale(.6)}30%,85%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.9)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes fadeSeq{0%,10%{opacity:0}20%,90%{opacity:1}100%{opacity:0}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes wave{to{transform:translateX(-60px)}}
+.bob{animation:bob 3s ease-in-out infinite;transform-box:fill-box}
+.pop{animation:pop 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.blink{animation:blink 1.4s ease-in-out infinite}
+.pulse{animation:pulse 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.seq{animation:fadeSeq 6s ease-in-out infinite;opacity:0}
+.wave{animation:wave 3s linear infinite}
+
+footer{border-top:1px solid var(--line);margin-top:70px;padding:30px 0;color:var(--muted);font-size:.9rem}
+
+@media (max-width: 900px){
+  .layout{grid-template-columns:1fr}
+  #menuBtn{display:inline-block}
+  .sidebar{position:fixed;top:calc(env(safe-area-inset-top,0px) + 57px);left:0;bottom:0;width:min(320px,86vw);height:auto;z-index:40;transform:translateX(-105%);transition:transform .25s;box-shadow:var(--shadow)}
+  .sidebar.open{transform:none}
+  .progress-track{width:70px}
+  body{font-size:17px}
+}
+@media (max-width: 520px){ .progress-pill .lbl,.progress-track,.mb-lbl{display:none} .brand .full{display:none} .topbar{gap:8px;padding:10px 12px} .icon-btn{white-space:nowrap} }
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .seq{opacity:1}
+}
+@media print{ .sidebar,.topbar,.copy,.done-row{display:none} .layout{display:block} .quiz .explain{display:block} }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrowhead"/></marker>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <button class="icon-btn" id="menuBtn" aria-label="Open lesson menu">☰<span class="mb-lbl"> Lessons</span></button>
+  <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"></span><span><span class="full">Fleet </span>School</span></a>
+  <span class="spacer"></span>
+  <span class="progress-pill"><span class="lbl">Progress</span><span class="progress-track"><span class="progress-fill" id="progFill"></span></span><span id="progTxt">0/20</span></span>
+  <button class="icon-btn" id="themeBtn" aria-label="Switch light or dark theme">🌗</button>
+</header>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Lessons">
+  <a href="#start"><span class="n">★</span>Start here</a>
+  <h5>Beginner: meet the fleet</h5>
+  <a href="#l1" data-l="1"><span class="n">1</span>Why Kubernetes?</a>
+  <a href="#l2" data-l="2"><span class="n">2</span>Cluster architecture</a>
+  <a href="#l3" data-l="3"><span class="n">3</span>Your own cluster &amp; kubectl</a>
+  <a href="#l4" data-l="4"><span class="n">4</span>Pods</a>
+  <a href="#l5" data-l="5"><span class="n">5</span>YAML, labels &amp; namespaces</a>
+  <a href="#l6" data-l="6"><span class="n">6</span>ReplicaSets &amp; Deployments</a>
+  <a href="#l7" data-l="7"><span class="n">7</span>Services</a>
+  <h5>Intermediate: running real apps</h5>
+  <a href="#l8" data-l="8"><span class="n">8</span>Rolling updates &amp; rollbacks</a>
+  <a href="#l9" data-l="9"><span class="n">9</span>ConfigMaps &amp; Secrets</a>
+  <a href="#l10" data-l="10"><span class="n">10</span>Storage: PV, PVC, StorageClass</a>
+  <a href="#l11" data-l="11"><span class="n">11</span>Ingress &amp; Gateway API</a>
+  <a href="#l12" data-l="12"><span class="n">12</span>Probes, requests &amp; limits</a>
+  <a href="#l13" data-l="13"><span class="n">13</span>StatefulSets, DaemonSets, Jobs</a>
+  <a href="#l14" data-l="14"><span class="n">14</span>Debugging like a detective</a>
+  <h5>Advanced: like a pro</h5>
+  <a href="#l15" data-l="15"><span class="n">15</span>Scheduling: affinity &amp; taints</a>
+  <a href="#l16" data-l="16"><span class="n">16</span>Autoscaling</a>
+  <a href="#l17" data-l="17"><span class="n">17</span>Security: RBAC &amp; policies</a>
+  <a href="#l18" data-l="18"><span class="n">18</span>Helm &amp; Kustomize</a>
+  <a href="#l19" data-l="19"><span class="n">19</span>Observability</a>
+  <a href="#l20" data-l="20"><span class="n">20</span>GitOps, operators &amp; CRDs</a>
+  <h5>Finish line</h5>
+  <a href="#capstone"><span class="n">⚓</span>Capstone project</a>
+  <a href="#final"><span class="n">🎓</span>Final exam</a>
+  <a href="#cheatsheet"><span class="n">📋</span>Cheat sheet</a>
+  <a href="#glossary"><span class="n">📖</span>Glossary</a>
+</nav>
+
+<main id="top">
+<section class="hero">
+  <svg class="hero-ship" viewBox="0 70 1000 200" role="img" aria-label="A control tower on the shore directing a fleet of ships; one ship sinks and a new one appears to replace it">
+    <!-- control tower -->
+    <rect x="40" y="110" width="70" height="150" rx="4" class="d-box"/>
+    <rect x="28" y="80" width="94" height="40" rx="6" class="d-ink"/>
+    <rect x="40" y="90" width="18" height="18" class="d-solid-sun blink"/><rect x="66" y="90" width="18" height="18" class="d-solid-sun blink" style="animation-delay:.5s"/><rect x="92" y="90" width="18" height="18" class="d-solid-sun blink" style="animation-delay:1s"/>
+    <text x="75" y="200" text-anchor="middle" class="t-s">control</text><text x="75" y="216" text-anchor="middle" class="t-s">plane</text>
+    <path d="M125 100 Q 250 40 340 150" class="ln-teal flow"/>
+    <path d="M125 100 Q 420 20 560 150" class="ln-teal flow"/>
+    <path d="M125 100 Q 620 10 790 150" class="ln-teal flow"/>
+    <!-- ship 1 -->
+    <g class="bob"><path d="M270 200 L420 200 L405 232 L285 232 Z" class="d-ink"/>
+      <rect x="285" y="172" width="38" height="26" rx="3" class="d-solid-teal"/><rect x="327" y="172" width="38" height="26" rx="3" class="d-solid-rust"/><rect x="369" y="172" width="38" height="26" rx="3" class="d-solid-sun"/>
+      <text x="345" y="164" text-anchor="middle" class="t-s">node 1</text></g>
+    <!-- ship 2 sinking & replaced -->
+    <g class="seq" style="animation-duration:7s"><path d="M490 200 L640 200 L625 232 L505 232 Z" class="d-ink"/>
+      <rect x="505" y="172" width="38" height="26" rx="3" class="d-solid-plum"/><rect x="547" y="172" width="38" height="26" rx="3" class="d-solid-teal"/><rect x="589" y="172" width="38" height="26" rx="3" class="d-solid-rust"/>
+      <text x="565" y="164" text-anchor="middle" class="t-s">node 2</text></g>
+    <!-- ship 3 -->
+    <g class="bob" style="animation-delay:1s"><path d="M710 200 L860 200 L845 232 L725 232 Z" class="d-ink"/>
+      <rect x="725" y="172" width="38" height="26" rx="3" class="d-solid-sun"/><rect x="767" y="172" width="38" height="26" rx="3" class="d-solid-teal"/><rect x="809" y="172" width="38" height="26" rx="3" class="d-solid-plum"/>
+      <text x="785" y="164" text-anchor="middle" class="t-s">node 3</text></g>
+    <g class="wave" opacity=".55">
+      <path d="M0 240 q30 -14 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" class="ln-teal"/>
+      <path d="M0 258 q30 -12 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0" class="ln-teal" opacity=".6"/>
+    </g>
+  </svg>
+  <h1>Learn Kubernetes by running a fleet.</h1>
+  <p class="lead">Docker taught you to pack one box. Kubernetes keeps hundreds of boxes sailing across many ships, and replaces any ship that sinks. Twenty lessons, each starting with a story a five-year-old would follow and ending with real <code>kubectl</code> on your own cluster.</p>
+  <div class="hero-cta">
+    <a class="btn" href="#l1">Start lesson 1</a>
+    <a class="btn ghost" href="#cheatsheet">Open the cheat sheet</a>
+  </div>
+</section>
+
+<div class="wrap">
+<section id="start">
+  <h2>How this course works</h2>
+  <p>Each lesson follows the same rhythm:</p>
+  <div class="table-wrap"><table>
+    <tr><th>Part</th><th>What you get</th></tr>
+    <tr><td>🧸 Explain like I’m 5</td><td>A simple story from everyday life.</td></tr>
+    <tr><td>📊 Animated diagram</td><td>A picture of what’s happening, with moving parts.</td></tr>
+    <tr><td>🛠️ The engineer’s view</td><td>Real terms, YAML and commands, and why they matter.</td></tr>
+    <tr><td>🧪 Hands-on lab</td><td>Things to type, what you should see, and hidden solutions.</td></tr>
+    <tr><td>❓ Quiz</td><td>Three questions with explanations. Progress is saved in this browser.</td></tr>
+  </table></div>
+  <div class="levels">
+    <div class="level l1"><b>Beginner, lessons 1–7</b><span>Clusters, Pods, Deployments, Services.</span></div>
+    <div class="level l2"><b>Intermediate, lessons 8–14</b><span>Updates, config, storage, Ingress, health, workloads, debugging.</span></div>
+    <div class="level l3"><b>Advanced, lessons 15–20</b><span>Scheduling, autoscaling, security, Helm, observability, GitOps.</span></div>
+  </div>
+  <p class="note">You should know basic Docker first: images, containers, ports and volumes. If those words feel fuzzy, do the Docker course before this one.</p>
+  <p class="tip">Everything runs on a free local cluster on your laptop. You don’t need a cloud account until the optional parts of the capstone.</p>
+</section>
+<!-- ============ LESSON 1 ============ -->
+<section class="lesson" id="l1" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L1</div><h2>Why Kubernetes?</h2></div>
+  <p class="lesson-meta">About 10 minutes. No installs yet.</p>
+  <p class="goal">You can explain what Kubernetes does that Docker alone doesn’t.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>With Docker, you learned to pack toys into boxes. That’s great when you have <b>one</b> toy box on <b>one</b> shelf.</p>
+    <p>Now imagine a giant toy shop with <b>a thousand boxes</b> and <b>fifty shelves</b>. Someone has to decide which shelf each box goes on, notice when a shelf breaks and move its boxes, put out more boxes when lots of kids arrive, and take some away when the shop is quiet.</p>
+    <p><b>Kubernetes is that shop manager.</b> You don’t tell it <i>how</i> to do things. You tell it <i>what you want</i>, like “always keep five teddy-bear boxes out”, and it makes it true, all day and all night.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 290" role="img" aria-label="Left: Docker on one machine needs a human to restart crashed containers. Right: Kubernetes across many machines heals and scales automatically">
+      <text x="190" y="26" text-anchor="middle" class="t-b">Docker on one server</text>
+      <text x="570" y="26" text-anchor="middle" class="t-b">Kubernetes across many</text>
+      <line x1="380" y1="10" x2="380" y2="280" class="ln" stroke-dasharray="4 6"/>
+      <rect x="90" y="60" width="200" height="120" rx="10" class="d-box"/><text x="190" y="82" text-anchor="middle" class="t">🖥️ one server</text>
+      <rect x="110" y="100" width="50" height="34" rx="4" class="d-teal"/><rect x="170" y="100" width="50" height="34" rx="4" class="d-red blink"/><text x="195" y="122" text-anchor="middle" class="t">💥</text><rect x="230" y="100" width="50" height="34" rx="4" class="d-teal"/>
+      <text x="190" y="160" text-anchor="middle" class="t-s">crash at 3 a.m.?</text>
+      <text x="190" y="215" text-anchor="middle" class="t">😴 a human must wake up</text>
+      <text x="190" y="240" text-anchor="middle" class="t">and fix it by hand</text>
+      <rect x="470" y="45" width="200" height="40" rx="8" class="d-sun"/><text x="570" y="70" text-anchor="middle" class="t-b">“I want 6 copies”</text>
+      <rect x="410" y="120" width="100" height="90" rx="8" class="d-box"/><rect x="520" y="120" width="100" height="90" rx="8" class="d-box"/><rect x="630" y="120" width="100" height="90" rx="8" class="d-box"/>
+      <rect x="422" y="140" width="34" height="28" rx="4" class="d-teal"/><rect x="464" y="140" width="34" height="28" rx="4" class="d-teal"/>
+      <rect x="532" y="140" width="34" height="28" rx="4" class="d-teal"/><rect x="574" y="140" width="34" height="28" rx="4" class="d-red seq"/>
+      <rect x="642" y="140" width="34" height="28" rx="4" class="d-teal"/><rect x="684" y="140" width="34" height="28" rx="4" class="d-green pop"/>
+      <path d="M570 87 L460 116 M570 87 L570 116 M570 87 L680 116" class="ln flow"/>
+      <text x="570" y="240" text-anchor="middle" class="t">🤖 crash noticed, copy replaced</text>
+      <text x="570" y="262" text-anchor="middle" class="t">on another machine in seconds</text>
+    </svg></div>
+    <figcaption>Docker runs containers. Kubernetes keeps the right number of them running across many machines.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <p><b>Kubernetes</b> (often written <b>K8s</b>: K, eight letters, s) is an open-source <b>container orchestrator</b>, originally from Google and now run by the Cloud Native Computing Foundation. Its name is Greek for “helmsman”.</p>
+    <p>What it gives you:</p>
+    <ul>
+      <li><b>Scheduling</b>: places containers on machines with enough free CPU and memory.</li>
+      <li><b>Self-healing</b>: restarts crashed containers and replaces ones on failed machines.</li>
+      <li><b>Scaling</b>: more or fewer copies, by hand or automatically.</li>
+      <li><b>Service discovery and load balancing</b>: a stable name and IP in front of changing containers.</li>
+      <li><b>Rolling updates and rollbacks</b>: new versions with zero downtime.</li>
+      <li><b>Config and secrets</b>, <b>storage</b>, and a huge <b>ecosystem</b> of extensions.</li>
+    </ul>
+    <p>The core idea is <b>declarative desired state</b>. You write down what you want (in YAML), send it to the cluster, and controllers keep comparing “what is” with “what should be” and fixing the difference. This loop is called <b>reconciliation</b>.</p>
+    <p class="note">Kubernetes isn’t always the answer. For one small app on one server, Docker Compose is simpler. Kubernetes pays off when you have many services, many machines, or need high availability.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: imperative vs declarative</div><div class="lab-body">
+    <p>No computer needed. Compare these two ways to get pizza for a party of ten.</p>
+    <ol class="steps">
+      <li><b>Imperative</b>: “Call the shop. Order two pizzas. When they arrive, count. If one is missing, call again.” Write down what happens if you fall asleep.</li>
+      <li><b>Declarative</b>: “There should always be at least two pizzas on the table.” Who needs to be awake now?</li>
+      <li>Write your own declarative sentence for a website: how many copies, which version, how much memory each.</li>
+    </ol>
+    <details class="solution"><summary>Show an example answer</summary>
+      <p>“Run 3 copies of shop-web version 2.1, each with 256 MB of memory, reachable at the name shop-web.” That sentence is almost exactly a Kubernetes Deployment plus a Service, as you’ll write in lessons 6 and 7.</p>
+    </details>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Kubernetes orchestrates containers across many machines.</li>
+    <li>You declare what you want; controllers keep reality matching it.</li>
+    <li>Self-healing, scaling, load balancing and rolling updates come built in.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="1"></div>
+  <div class="done-row"><button class="mark-done" data-done="1">Mark lesson complete</button><a class="nav-next" href="#l2">Next: Cluster architecture</a></div>
+</section>
+
+<!-- ============ LESSON 2 ============ -->
+<section class="lesson" id="l2" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L2</div><h2>Cluster architecture</h2></div>
+  <p class="lesson-meta">About 15 minutes.</p>
+  <p class="goal">You can name every piece of a cluster and say what it does.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>Think of a <b>school</b>. The <b>head office</b> is the <b>control plane</b>. Inside it:</p>
+    <p>The <b>receptionist</b> (API server) is the only person you talk to. The <b>big notebook</b> (etcd) remembers everything. The <b>timetable maker</b> (scheduler) decides which classroom each class goes to. The <b>hall monitors</b> (controllers) walk around checking everything matches the notebook.</p>
+    <p>The <b>classrooms</b> are the <b>worker nodes</b>. Each has a <b>teacher</b> (kubelet) who makes sure the right kids are in the room, and a <b>door person</b> (kube-proxy) who directs visitors to the right desk.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 360" role="img" aria-label="Control plane with API server, etcd, scheduler and controller manager talks to worker nodes, each running kubelet, kube-proxy, a container runtime and pods">
+      <rect x="20" y="20" width="720" height="130" rx="14" class="d-sun"/>
+      <text x="40" y="44" class="t-b">🏫 Control plane (head office)</text>
+      <rect x="40" y="60" width="160" height="70" rx="10" class="d-box"/><text x="120" y="88" text-anchor="middle" class="t-b">kube-apiserver</text><text x="120" y="110" text-anchor="middle" class="t-s">the receptionist</text>
+      <rect x="220" y="60" width="150" height="70" rx="10" class="d-box"/><text x="295" y="88" text-anchor="middle" class="t-b">etcd 📒</text><text x="295" y="110" text-anchor="middle" class="t-s">the notebook</text>
+      <rect x="390" y="60" width="150" height="70" rx="10" class="d-box"/><text x="465" y="88" text-anchor="middle" class="t-b">scheduler</text><text x="465" y="110" text-anchor="middle" class="t-s">timetable maker</text>
+      <rect x="560" y="60" width="160" height="70" rx="10" class="d-box"/><text x="640" y="88" text-anchor="middle" class="t-b">controller-mgr</text><text x="640" y="110" text-anchor="middle" class="t-s">hall monitors</text>
+      <path d="M202 95 L216 95" class="ln" marker-end="url(#ah)"/>
+      <g transform="translate(0,0)">
+        <rect x="20" y="200" width="350" height="145" rx="14" class="d-teal"/><text x="40" y="224" class="t-b">🏠 Worker node 1</text>
+        <rect x="40" y="236" width="95" height="40" rx="8" class="d-box"/><text x="87" y="261" text-anchor="middle" class="t">kubelet</text>
+        <rect x="145" y="236" width="100" height="40" rx="8" class="d-box"/><text x="195" y="261" text-anchor="middle" class="t">kube-proxy</text>
+        <rect x="255" y="236" width="100" height="40" rx="8" class="d-box"/><text x="305" y="261" text-anchor="middle" class="t">containerd</text>
+        <rect x="40" y="290" width="70" height="40" rx="20" class="d-green"/><text x="75" y="315" text-anchor="middle" class="t">pod</text>
+        <rect x="120" y="290" width="70" height="40" rx="20" class="d-green"/><text x="155" y="315" text-anchor="middle" class="t">pod</text>
+        <rect x="200" y="290" width="70" height="40" rx="20" class="d-green pop"/><text x="235" y="315" text-anchor="middle" class="t pop">pod</text>
+      </g>
+      <rect x="390" y="200" width="350" height="145" rx="14" class="d-teal"/><text x="410" y="224" class="t-b">🏠 Worker node 2</text>
+      <rect x="410" y="236" width="95" height="40" rx="8" class="d-box"/><text x="457" y="261" text-anchor="middle" class="t">kubelet</text>
+      <rect x="515" y="236" width="100" height="40" rx="8" class="d-box"/><text x="565" y="261" text-anchor="middle" class="t">kube-proxy</text>
+      <rect x="625" y="236" width="100" height="40" rx="8" class="d-box"/><text x="675" y="261" text-anchor="middle" class="t">containerd</text>
+      <rect x="410" y="290" width="70" height="40" rx="20" class="d-green"/><text x="445" y="315" text-anchor="middle" class="t">pod</text>
+      <rect x="490" y="290" width="70" height="40" rx="20" class="d-green"/><text x="525" y="315" text-anchor="middle" class="t">pod</text>
+      <path d="M120 132 L87 232" class="ln-teal flow" marker-end="url(#ah)"/>
+      <path d="M120 132 L457 232" class="ln-teal flow" marker-end="url(#ah)"/>
+      <text x="300" y="175" text-anchor="middle" class="t-s">kubelets watch the API server for work</text>
+    </svg></div>
+    <figcaption>Everything talks to the API server. Only the API server talks to etcd.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <div class="table-wrap"><table>
+      <tr><th>Component</th><th>Runs on</th><th>Job</th></tr>
+      <tr><td><b>kube-apiserver</b></td><td>Control plane</td><td>Front door. Validates and stores every request. kubectl, nodes and controllers all talk to it.</td></tr>
+      <tr><td><b>etcd</b></td><td>Control plane</td><td>Consistent key-value store holding the whole cluster state. Back it up!</td></tr>
+      <tr><td><b>kube-scheduler</b></td><td>Control plane</td><td>Picks a node for each new Pod based on resources and rules.</td></tr>
+      <tr><td><b>kube-controller-manager</b></td><td>Control plane</td><td>Runs controllers (Deployment, ReplicaSet, Node, Job…) that reconcile state.</td></tr>
+      <tr><td><b>cloud-controller-manager</b></td><td>Control plane (cloud)</td><td>Talks to the cloud for load balancers, disks, node lifecycle.</td></tr>
+      <tr><td><b>kubelet</b></td><td>Every node</td><td>Agent that starts and watches the Pods assigned to its node.</td></tr>
+      <tr><td><b>kube-proxy</b></td><td>Every node</td><td>Programs networking rules so Services route to Pods.</td></tr>
+      <tr><td><b>Container runtime</b></td><td>Every node</td><td>containerd or CRI-O actually runs containers.</td></tr>
+    </table></div>
+    <p><b>What happens when you create a Deployment:</b> kubectl sends YAML to the API server → stored in etcd → the Deployment controller creates a ReplicaSet → the ReplicaSet controller creates Pods → the scheduler assigns each Pod to a node → that node’s kubelet tells containerd to pull the image and start the containers → status flows back to the API server.</p>
+    <p class="note">Kubernetes removed direct Docker Engine support (the “dockershim”) in version 1.24. Images built with Docker still work perfectly, because they follow the OCI standard that containerd understands.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: draw the journey</div><div class="lab-body">
+    <ol class="steps">
+      <li>On paper, draw the eight components above as boxes.</li>
+      <li>Draw numbered arrows for “I ran <code>kubectl create deployment web --image=nginx</code>”. Use the paragraph above to check.</li>
+      <li>After lesson 3, verify with real components: <code>kubectl get pods -n kube-system</code> lists the control plane parts running as Pods.</li>
+    </ol>
+    <details class="solution"><summary>What if the control plane goes down?</summary><p>Running Pods keep running, because kubelets keep them alive. But nothing new can be scheduled, scaled or healed until the control plane is back. That’s why production clusters run three or more control-plane nodes.</p></details>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Control plane: API server, etcd, scheduler, controller manager.</li>
+    <li>Each node: kubelet, kube-proxy, container runtime.</li>
+    <li>Everything goes through the API server.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="2"></div>
+  <div class="done-row"><button class="mark-done" data-done="2">Mark lesson complete</button><a class="nav-next" href="#l3">Next: Your own cluster</a></div>
+</section>
+
+<!-- ============ LESSON 3 ============ -->
+<section class="lesson" id="l3" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L3</div><h2>Your own cluster &amp; kubectl</h2></div>
+  <p class="lesson-meta">About 20 minutes.</p>
+  <p class="goal">A working local cluster and comfort with the <code>kubectl</code> command.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>Real shops have huge buildings. To practise, we’ll build a <b>toy shop on your desk</b>: a small cluster living inside your laptop. And we’ll get a <b>walkie-talkie</b> called <code>kubectl</code> (say “cube-control”) to talk to the shop manager.</p>
+  </div>
+
+  <div class="pro"><div class="tag">Choose a local cluster</div>
+    <div class="table-wrap"><table>
+      <tr><th>Tool</th><th>How it works</th><th>Good for</th></tr>
+      <tr><td><b>kind</b> (Kubernetes in Docker)</td><td>Each node is a Docker container</td><td>Fast, multi-node clusters, CI. Used in this course.</td></tr>
+      <tr><td><b>minikube</b></td><td>VM or container, lots of add-ons</td><td>Beginners, built-in dashboard and ingress add-ons</td></tr>
+      <tr><td><b>Docker Desktop</b></td><td>One checkbox: Settings → Kubernetes</td><td>Zero setup if you already use it</td></tr>
+      <tr><td><b>k3d / k3s</b></td><td>Lightweight Kubernetes</td><td>Small machines, Raspberry Pi, edge</td></tr>
+    </table></div>
+    <p>Install <code>kubectl</code> and <code>kind</code> (needs Docker running):</p>
+<pre class="sh"># macOS (Homebrew)
+$ brew install kubectl kind
+# Windows (winget)
+$ winget install Kubernetes.kubectl Kubernetes.kind
+# Linux: download binaries from kubernetes.io and kind.sigs.k8s.io</pre>
+    <p>Create a cluster with one control plane and two workers. Save as <code>kind.yaml</code>:</p>
+<pre class="file" data-name="kind.yaml">kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+    extraPortMappings:          # lets you reach Ingress on localhost later
+      - containerPort: 80
+        hostPort: 80
+  - role: worker
+  - role: worker</pre>
+<pre class="sh">$ kind create cluster --name fleet --config kind.yaml
+Creating cluster "fleet" ...
+ ✓ Ensuring node image
+ ✓ Preparing nodes 📦 📦 📦
+Set kubectl context to "kind-fleet"</pre>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 200" role="img" aria-label="kubectl reads kubeconfig to find the cluster API server and sends requests">
+      <rect x="20" y="60" width="150" height="80" rx="10" class="d-teal"/><text x="95" y="94" text-anchor="middle" class="t-b">💻 kubectl</text><text x="95" y="116" text-anchor="middle" class="t-s">walkie-talkie</text>
+      <rect x="230" y="20" width="200" height="70" rx="10" class="d-sun"/><text x="330" y="48" text-anchor="middle" class="t-b">~/.kube/config</text><text x="330" y="70" text-anchor="middle" class="t-s">which cluster, who am I</text>
+      <rect x="520" y="60" width="220" height="80" rx="10" class="d-plum"/><text x="630" y="94" text-anchor="middle" class="t-b">API server</text><text x="630" y="116" text-anchor="middle" class="t-s">cluster “kind-fleet”</text>
+      <path d="M172 84 L226 62" class="ln flow" marker-end="url(#ah)"/><text x="190" y="58" class="t-s">reads</text>
+      <path d="M172 112 L516 112" class="ln-teal flow" marker-end="url(#ah)"/><text x="344" y="134" text-anchor="middle" class="t-m">HTTPS + certificates</text>
+      <circle r="7" class="d-solid-rust"><animateMotion dur="2.5s" repeatCount="indefinite" path="M172 112 L516 112"/></circle>
+    </svg></div>
+    <figcaption>A <b>context</b> in kubeconfig = cluster + user + default namespace.</figcaption>
+  </figure>
+
+  <div class="lab"><div class="lab-head">Hands-on: first contact</div><div class="lab-body">
+    <ol class="steps">
+      <li>Is anyone there?
+<pre class="sh">$ kubectl cluster-info
+Kubernetes control plane is running at https://127.0.0.1:52341
+$ kubectl get nodes
+NAME                  STATUS   ROLES           AGE   VERSION
+fleet-control-plane   Ready    control-plane   2m    v1.31.0
+fleet-worker          Ready    &lt;none&gt;          2m    v1.31.0
+fleet-worker2         Ready    &lt;none&gt;          2m    v1.31.0</pre></li>
+      <li>Meet the control plane running as Pods:
+<pre class="sh">$ kubectl get pods -n kube-system</pre>Find etcd, the API server, the scheduler and the controller manager from lesson 2.</li>
+      <li>Learn the shape of every command: <b>kubectl VERB TYPE NAME FLAGS</b>.
+<pre class="sh">$ kubectl get nodes -o wide
+$ kubectl describe node fleet-worker
+$ kubectl api-resources       # every kind of object the cluster knows
+$ kubectl explain pod.spec.containers   # built-in documentation!</pre></li>
+      <li>Set up a time-saver alias and tab completion (bash/zsh):
+<pre class="sh">$ alias k=kubectl
+$ source &lt;(kubectl completion bash)</pre></li>
+      <li>See and switch contexts:
+<pre class="sh">$ kubectl config get-contexts
+$ kubectl config use-context kind-fleet</pre></li>
+    </ol>
+    <p class="tip">Keep the cluster for the rest of the course. Delete it any time with <code>kind delete cluster --name fleet</code> and recreate it in a minute.</p>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li><code>kind</code>, minikube or Docker Desktop give you a real cluster locally.</li>
+    <li><code>kubectl VERB TYPE NAME</code>: get, describe, apply, delete, logs, exec.</li>
+    <li><code>kubectl explain</code> is your offline documentation.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="3"></div>
+  <div class="done-row"><button class="mark-done" data-done="3">Mark lesson complete</button><a class="nav-next" href="#l4">Next: Pods</a></div>
+</section>
+
+<!-- ============ LESSON 4 ============ -->
+<section class="lesson" id="l4" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L4</div><h2>Pods</h2></div>
+  <p class="lesson-meta">About 25 minutes.</p>
+  <p class="goal">You can create, inspect, enter and delete Pods, and explain why Pods (not containers) are Kubernetes’ smallest unit.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>Peas grow inside a <b>pea pod</b>. The peas in one pod are always together: they share the same pod, travel together, and get picked together.</p>
+    <p>In Kubernetes, containers live inside a <b>Pod</b>. Usually there’s just one pea (one container). Sometimes there’s a helper pea too, like a little friend who collects the main pea’s diary pages and posts them. Peas in the same pod share one address and can share a lunchbox (storage).</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 260" role="img" aria-label="A pod with one IP address containing an app container and a sidecar container that share localhost and a volume">
+      <rect x="140" y="30" width="480" height="200" rx="100" class="d-green"/>
+      <text x="380" y="62" text-anchor="middle" class="t-b">🫛 Pod “web”, IP 10.244.1.7</text>
+      <rect x="200" y="85" width="150" height="70" rx="12" class="d-teal"/><text x="275" y="114" text-anchor="middle" class="t-b">app</text><text x="275" y="136" text-anchor="middle" class="t-s">nginx :80</text>
+      <rect x="410" y="85" width="150" height="70" rx="12" class="d-plum"/><text x="485" y="114" text-anchor="middle" class="t-b">sidecar</text><text x="485" y="136" text-anchor="middle" class="t-s">log shipper</text>
+      <path d="M352 120 L406 120" class="ln flow" marker-end="url(#ah)"/><text x="379" y="110" text-anchor="middle" class="t-s">localhost</text>
+      <rect x="290" y="172" width="180" height="38" rx="8" class="d-sun"/><text x="380" y="196" text-anchor="middle" class="t">💾 shared volume /logs</text>
+      <path d="M275 157 L330 170 M485 157 L430 170" class="ln"/>
+      <text x="70" y="130" text-anchor="middle" class="t-s">scheduled</text><text x="70" y="146" text-anchor="middle" class="t-s">together</text>
+      <text x="690" y="130" text-anchor="middle" class="t-s">live and die</text><text x="690" y="146" text-anchor="middle" class="t-s">together</text>
+    </svg></div>
+    <figcaption>One Pod = one IP address, shared network and optional shared volumes for its containers.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">Your first Pod in YAML</div>
+<pre class="file" data-name="pod.yaml">apiVersion: v1          # which API group/version
+kind: Pod               # what type of object
+metadata:
+  name: hello
+  labels:
+    app: hello
+spec:                   # what you want
+  containers:
+    - name: web
+      image: nginx:1.27-alpine
+      ports:
+        - containerPort: 80</pre>
+    <ul>
+      <li>Every object has <code>apiVersion</code>, <code>kind</code>, <code>metadata</code> and usually <code>spec</code>. The cluster adds a <code>status</code> section describing reality.</li>
+      <li>Pods are <b>disposable</b> (“cattle, not pets”). If a Pod dies, nothing recreates it unless a controller (like a Deployment) owns it. In real life you rarely create bare Pods.</li>
+      <li><b>Pod phases</b>: Pending → Running → Succeeded or Failed (plus Unknown). Container states: Waiting, Running, Terminated.</li>
+      <li><b>Multi-container patterns</b>: sidecar (helper alongside the app), init container (runs to completion before the app starts), ambassador/adapter.</li>
+    </ul>
+<pre class="file" data-name="pod-with-init.yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: waiter
+spec:
+  initContainers:
+    - name: wait-for-db
+      image: busybox:1.36
+      command: ["sh", "-c", "until nslookup db; do echo waiting; sleep 2; done"]
+  containers:
+    - name: app
+      image: nginx:1.27-alpine</pre>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: grow some peas</div><div class="lab-body">
+    <ol class="steps">
+      <li>Create the Pod from YAML and watch it start:
+<pre class="sh">$ kubectl apply -f pod.yaml
+pod/hello created
+$ kubectl get pods -o wide
+NAME    READY   STATUS    IP            NODE
+hello   1/1     Running   10.244.1.7    fleet-worker</pre></li>
+      <li>Read its full story. The <b>Events</b> at the bottom are gold for debugging.
+<pre class="sh">$ kubectl describe pod hello</pre></li>
+      <li>Look inside, read logs, and reach it from your laptop:
+<pre class="sh">$ kubectl exec -it hello -- sh
+/ # wget -qO- localhost | head -n 4
+/ # exit
+$ kubectl logs hello
+$ kubectl port-forward pod/hello 8080:80</pre>Open <code>http://localhost:8080</code>, then <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
+      <li>Delete it and notice nobody brings it back:
+<pre class="sh">$ kubectl delete pod hello
+$ kubectl get pods
+No resources found in default namespace.</pre></li>
+      <li>Generate YAML instead of typing it (a pro trick you’ll use forever):
+<pre class="sh">$ kubectl run demo --image=nginx:1.27-alpine --dry-run=client -o yaml &gt; demo.yaml</pre></li>
+    </ol>
+    <div class="challenge">Write a Pod with two containers: nginx, and a <code>busybox</code> container running <code>sh -c "while true; do wget -qO- localhost; sleep 5; done"</code>. Check the busybox logs. Why does <code>localhost</code> reach nginx? Use <code>kubectl logs POD -c CONTAINER</code>.</div>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>A Pod wraps one or more containers sharing an IP and volumes.</li>
+    <li>Bare Pods aren’t recreated when deleted. Use controllers.</li>
+    <li><code>apply</code>, <code>get</code>, <code>describe</code>, <code>logs</code>, <code>exec</code>, <code>port-forward</code>, <code>delete</code>.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="4"></div>
+  <div class="done-row"><button class="mark-done" data-done="4">Mark lesson complete</button><a class="nav-next" href="#l5">Next: YAML, labels &amp; namespaces</a></div>
+</section>
+
+<!-- ============ LESSON 5 ============ -->
+<section class="lesson" id="l5" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L5</div><h2>YAML, labels &amp; namespaces</h2></div>
+  <p class="lesson-meta">About 20 minutes.</p>
+  <p class="goal">You can read any manifest, find things with labels, and keep teams apart with namespaces.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p><b>Labels</b> are coloured stickers. You can put a “red” sticker and a “big” sticker on a ball. Later you can say “bring me everything with a red sticker” and get all the red things, whatever they are. That question is a <b>selector</b>.</p>
+    <p><b>Namespaces</b> are separate <b>rooms</b> in a house. Your toys go in your room, your sister’s in hers. You can both have a toy called “teddy” without mixing them up.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 270" role="img" aria-label="Two namespaces containing pods with labels; a selector app=shop picks only matching pods">
+      <rect x="20" y="20" width="350" height="230" rx="14" class="d-box" stroke-dasharray="8 6"/><text x="40" y="44" class="t-b">🚪 namespace: dev</text>
+      <rect x="390" y="20" width="350" height="230" rx="14" class="d-box" stroke-dasharray="8 6"/><text x="410" y="44" class="t-b">🚪 namespace: prod</text>
+      <g class="pulse"><rect x="40" y="70" width="150" height="60" rx="30" class="d-green"/><text x="115" y="96" text-anchor="middle" class="t">web</text><text x="115" y="114" text-anchor="middle" class="t-m">app=shop</text></g>
+      <rect x="200" y="70" width="150" height="60" rx="30" class="d-box"/><text x="275" y="96" text-anchor="middle" class="t">cache</text><text x="275" y="114" text-anchor="middle" class="t-m">app=redis</text>
+      <g class="pulse"><rect x="40" y="160" width="150" height="60" rx="30" class="d-green"/><text x="115" y="186" text-anchor="middle" class="t">api</text><text x="115" y="204" text-anchor="middle" class="t-m">app=shop</text></g>
+      <rect x="410" y="70" width="150" height="60" rx="30" class="d-box"/><text x="485" y="96" text-anchor="middle" class="t">web</text><text x="485" y="114" text-anchor="middle" class="t-m">app=shop</text>
+      <rect x="570" y="70" width="150" height="60" rx="30" class="d-box"/><text x="645" y="96" text-anchor="middle" class="t">db</text><text x="645" y="114" text-anchor="middle" class="t-m">app=postgres</text>
+      <rect x="220" y="168" width="140" height="46" rx="10" class="d-sun"/><text x="290" y="188" text-anchor="middle" class="t-m">-n dev</text><text x="290" y="205" text-anchor="middle" class="t-m">-l app=shop</text>
+      <text x="565" y="190" text-anchor="middle" class="t-s">not selected: other room</text>
+    </svg></div>
+    <figcaption>A selector matches labels <i>within</i> a namespace. Same names can exist in different namespaces.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">YAML survival kit</div>
+<pre class="file" data-name="yaml-basics.yaml"># key: value
+name: web
+replicas: 3            # number
+enabled: true          # boolean
+version: "1.0"         # quote strings that look like numbers
+
+# map (dictionary): indent with SPACES, never tabs
+metadata:
+  name: web
+  labels:
+    app: shop
+    tier: frontend
+
+# list: dash + space
+ports:
+  - containerPort: 80
+  - containerPort: 443
+
+# inline forms work too
+selector: { app: shop }
+args: ["--port", "80"]
+
+---   # three dashes separate multiple objects in one file</pre>
+    <h4>Labels, selectors, annotations</h4>
+    <ul>
+      <li><b>Labels</b> identify and group objects. Services, Deployments and NetworkPolicies find Pods by label. Common keys: <code>app.kubernetes.io/name</code>, <code>app.kubernetes.io/version</code>, <code>tier</code>, <code>env</code>.</li>
+      <li><b>Selectors</b>: equality (<code>app=shop</code>, <code>env!=prod</code>) and set-based (<code>env in (dev,qa)</code>).</li>
+      <li><b>Annotations</b> hold non-identifying notes for tools (build info, ingress settings). They can’t be selected on.</li>
+    </ul>
+    <h4>Namespaces</h4>
+    <p>Default ones: <code>default</code>, <code>kube-system</code> (cluster parts), <code>kube-public</code>, <code>kube-node-lease</code>. Names must be unique only inside a namespace. Some objects are cluster-wide and have no namespace: Nodes, PersistentVolumes, StorageClasses, ClusterRoles, Namespaces themselves.</p>
+    <p class="warn">Namespaces separate names and permissions, not network traffic. Pods in different namespaces can talk to each other by default. Use NetworkPolicies (lesson 17) to block that.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: stickers and rooms</div><div class="lab-body">
+    <ol class="steps">
+      <li>Make two rooms and put Pods in them:
+<pre class="sh">$ kubectl create namespace dev
+$ kubectl create namespace prod
+$ kubectl run web --image=nginx:1.27-alpine -n dev -l app=shop,tier=frontend
+$ kubectl run api --image=nginx:1.27-alpine -n dev -l app=shop,tier=backend
+$ kubectl run cache --image=redis:7-alpine -n dev -l app=redis
+$ kubectl run web --image=nginx:1.27-alpine -n prod -l app=shop</pre>Two Pods called <code>web</code>, no conflict.</li>
+      <li>Ask by sticker:
+<pre class="sh">$ kubectl get pods -n dev -l app=shop
+$ kubectl get pods -n dev -l 'tier in (frontend)'
+$ kubectl get pods -A -l app=shop --show-labels</pre></li>
+      <li>Add and change stickers live:
+<pre class="sh">$ kubectl label pod cache -n dev env=test
+$ kubectl label pod cache -n dev env=staging --overwrite
+$ kubectl annotate pod cache -n dev owner="team-blue"</pre></li>
+      <li>Make <code>dev</code> your default room so you can stop typing <code>-n dev</code>:
+<pre class="sh">$ kubectl config set-context --current --namespace=dev</pre></li>
+      <li>Clean up both rooms at once (deleting a namespace deletes everything inside):
+<pre class="sh">$ kubectl config set-context --current --namespace=default
+$ kubectl delete namespace dev prod</pre></li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>YAML: spaces not tabs, dashes for lists, <code>---</code> between objects.</li>
+    <li>Labels + selectors are how Kubernetes objects find each other.</li>
+    <li>Namespaces separate names and permissions, not network traffic.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="5"></div>
+  <div class="done-row"><button class="mark-done" data-done="5">Mark lesson complete</button><a class="nav-next" href="#l6">Next: Deployments</a></div>
+</section>
+
+<!-- ============ LESSON 6 ============ -->
+<section class="lesson" id="l6" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L6</div><h2>ReplicaSets &amp; Deployments</h2></div>
+  <p class="lesson-meta">About 25 minutes. The object you’ll write most often.</p>
+  <p class="goal">You can run an app as several self-healing copies and scale it with one command.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>You tell the babysitter: “There must always be <b>three</b> kids on the swings.” If one kid goes home, the babysitter brings another. If four show up, one is asked to go play somewhere else. That babysitter is a <b>ReplicaSet</b>.</p>
+    <p>A <b>Deployment</b> is the babysitter’s <b>boss</b>. When it’s time for new swings, the boss carefully moves kids from the old swings to the new ones, a few at a time, so the playground is never empty.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 260" role="img" aria-label="Deployment owns a ReplicaSet which owns three pods; a deleted pod is replaced">
+      <rect x="20" y="90" width="160" height="80" rx="12" class="d-sun"/><text x="100" y="122" text-anchor="middle" class="t-b">Deployment</text><text x="100" y="144" text-anchor="middle" class="t-s">the boss: versions</text>
+      <rect x="250" y="90" width="170" height="80" rx="12" class="d-plum"/><text x="335" y="122" text-anchor="middle" class="t-b">ReplicaSet</text><text x="335" y="144" text-anchor="middle" class="t-m">replicas: 3</text>
+      <path d="M182 130 L246 130" class="ln flow" marker-end="url(#ah)"/><text x="214" y="120" text-anchor="middle" class="t-s">owns</text>
+      <rect x="520" y="25" width="200" height="54" rx="27" class="d-green"/><text x="620" y="57" text-anchor="middle" class="t">pod web-7d9…-abcde</text>
+      <rect x="520" y="103" width="200" height="54" rx="27" class="d-red seq" style="animation-duration:6s"/><text x="620" y="135" text-anchor="middle" class="t seq" style="animation-duration:6s">💥 deleted</text>
+      <rect x="520" y="103" width="200" height="54" rx="27" class="d-green seq" style="animation-duration:6s;animation-delay:3s"/><text x="620" y="135" text-anchor="middle" class="t seq" style="animation-duration:6s;animation-delay:3s">✨ new pod …-xk2p9</text>
+      <rect x="520" y="181" width="200" height="54" rx="27" class="d-green"/><text x="620" y="213" text-anchor="middle" class="t">pod web-7d9…-q8w2r</text>
+      <path d="M422 120 L516 55 M422 130 L516 130 M422 140 L516 205" class="ln-teal flow"/>
+      <text x="335" y="210" text-anchor="middle" class="t-s">counts Pods with label app=web</text>
+      <text x="335" y="228" text-anchor="middle" class="t-s">and fixes any difference</text>
+    </svg></div>
+    <figcaption>You manage the Deployment. It manages ReplicaSets. They manage Pods.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">A Deployment manifest</div>
+<pre class="file" data-name="deploy.yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels: { app: web }
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web            # must match the template labels below
+  template:               # a Pod template: the cookie cutter
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80</pre>
+    <ul>
+      <li>The <code>selector</code> must match <code>template.metadata.labels</code>, or the API server rejects it.</li>
+      <li>Pod names get a ReplicaSet hash and a random suffix: <code>web-7d9f8c6b5-abcde</code>.</li>
+      <li>You almost never create ReplicaSets yourself. Deployments create one per version, which enables rollbacks (lesson 8).</li>
+      <li>Imperative (<code>kubectl scale</code>) and declarative (<code>kubectl apply</code>) can fight: if you scale by hand and then re-apply a file saying 3, you’re back to 3. Prefer editing the file.</li>
+    </ul>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: the unbeatable babysitter</div><div class="lab-body">
+    <ol class="steps">
+      <li>Apply and look at the whole family:
+<pre class="sh">$ kubectl apply -f deploy.yaml
+$ kubectl get deploy,rs,pods -l app=web
+NAME                  READY   UP-TO-DATE   AVAILABLE
+deployment.apps/web   3/3     3            3
+NAME                            DESIRED   CURRENT   READY
+replicaset.apps/web-7d9f8c6b5   3         3         3</pre></li>
+      <li>In a second terminal, watch: <code>kubectl get pods -l app=web -w</code>. In the first, delete a Pod:
+<pre class="sh">$ kubectl delete pod $(kubectl get pods -l app=web -o name | head -n 1)</pre>Watch a replacement appear within a second or two.</li>
+      <li>Scale up and down:
+<pre class="sh">$ kubectl scale deployment web --replicas=6
+$ kubectl get pods -l app=web -o wide     # spread across both workers
+$ kubectl scale deployment web --replicas=2</pre></li>
+      <li>Be sneaky: remove the label from a Pod so it no longer matches.
+<pre class="sh">$ kubectl label pod POD_NAME app-     # the trailing dash removes the label
+$ kubectl get pods --show-labels</pre>The ReplicaSet makes a new Pod to get back to 2, and the orphan keeps running on its own. (This is how you quarantine a misbehaving Pod for debugging.)</li>
+      <li>Keep the <code>web</code> Deployment for the next lesson. Delete the orphan Pod.</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Deployment → ReplicaSet → Pods.</li>
+    <li>ReplicaSets keep the count right by matching labels.</li>
+    <li>Change replicas in YAML and <code>kubectl apply</code>; that’s the declarative way.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="6"></div>
+  <div class="done-row"><button class="mark-done" data-done="6">Mark lesson complete</button><a class="nav-next" href="#l7">Next: Services</a></div>
+</section>
+
+<!-- ============ LESSON 7 ============ -->
+<section class="lesson" id="l7" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">L7</div><h2>Services</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">Your Pods get one stable name and address, inside and outside the cluster.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>Pods come and go, and each new one gets a <b>new phone number</b>. Calling them directly is hopeless.</p>
+    <p>A <b>Service</b> is like a <b>pizza shop’s main phone number</b>. You always call the same number. Behind it, whichever cook is free picks up. Cooks can change shifts all day, and you never notice.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 270" role="img" aria-label="A client calls the service name web, which load balances across three pods selected by label">
+      <rect x="20" y="105" width="130" height="60" rx="10" class="d-box"/><text x="85" y="132" text-anchor="middle" class="t-b">client pod</text><text x="85" y="152" text-anchor="middle" class="t-m">http://web</text>
+      <rect x="240" y="90" width="180" height="90" rx="14" class="d-sun"/><text x="330" y="118" text-anchor="middle" class="t-b">☎️ Service “web”</text><text x="330" y="140" text-anchor="middle" class="t-m">10.96.12.34:80</text><text x="330" y="160" text-anchor="middle" class="t-m">selector app=web</text>
+      <rect x="540" y="25" width="190" height="50" rx="25" class="d-green"/><text x="635" y="55" text-anchor="middle" class="t">pod 10.244.1.5</text>
+      <rect x="540" y="110" width="190" height="50" rx="25" class="d-green"/><text x="635" y="140" text-anchor="middle" class="t">pod 10.244.2.8</text>
+      <rect x="540" y="195" width="190" height="50" rx="25" class="d-green"/><text x="635" y="225" text-anchor="middle" class="t">pod 10.244.1.9</text>
+      <path d="M152 135 L236 135" class="ln flow" marker-end="url(#ah)"/>
+      <path d="M422 120 L536 50 M422 135 L536 135 M422 150 L536 220" class="ln-teal flow"/>
+      <circle r="6" class="d-solid-rust"><animateMotion dur="1.8s" repeatCount="indefinite" path="M150 135 L330 135 L540 50"/></circle>
+      <circle r="6" class="d-solid-rust"><animateMotion dur="1.8s" begin=".6s" repeatCount="indefinite" path="M150 135 L330 135 L540 135"/></circle>
+      <circle r="6" class="d-solid-rust"><animateMotion dur="1.8s" begin="1.2s" repeatCount="indefinite" path="M150 135 L330 135 L540 220"/></circle>
+      <text x="330" y="215" text-anchor="middle" class="t-s">stable name + IP; Pod list</text><text x="330" y="232" text-anchor="middle" class="t-s">kept up to date in EndpointSlices</text>
+    </svg></div>
+    <figcaption>The Service finds Pods by label and spreads requests across the ready ones.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">Service types</div>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Reachable from</th><th>Use</th></tr>
+      <tr><td><b>ClusterIP</b> (default)</td><td>Inside the cluster only</td><td>Talking between your own services</td></tr>
+      <tr><td><b>NodePort</b></td><td>Every node’s IP on a port 30000–32767</td><td>Quick external access, labs, bare metal</td></tr>
+      <tr><td><b>LoadBalancer</b></td><td>A cloud load balancer’s public IP</td><td>Exposing a service on AWS/GCP/Azure</td></tr>
+      <tr><td><b>ExternalName</b></td><td>DNS alias to an outside name</td><td>Pointing at an external database</td></tr>
+      <tr><td><b>Headless</b> (<code>clusterIP: None</code>)</td><td>DNS returns Pod IPs directly</td><td>StatefulSets, client-side balancing</td></tr>
+    </table></div>
+<pre class="file" data-name="svc.yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  type: ClusterIP
+  selector:
+    app: web            # which Pods
+  ports:
+    - port: 80          # the Service's port
+      targetPort: 80    # the container's port</pre>
+    <p><b>DNS names</b>: inside the same namespace just use <code>web</code>. From another namespace: <code>web.NAMESPACE</code>, or fully <code>web.NAMESPACE.svc.cluster.local</code>. CoreDNS provides this.</p>
+    <p class="tip">If a Service doesn’t work, run <code>kubectl get endpointslices -l kubernetes.io/service-name=web</code>. Empty? Your selector doesn’t match any ready Pod’s labels. That’s the cause nine times out of ten.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: one phone number</div><div class="lab-body">
+    <ol class="steps">
+      <li>Make the <code>web</code> Deployment show which Pod answers, then expose it:
+<pre class="sh">$ kubectl scale deployment web --replicas=3
+$ for p in $(kubectl get pods -l app=web -o name); do kubectl exec $p -- sh -c 'echo "hi from $(hostname)" &gt; /usr/share/nginx/html/index.html'; done
+$ kubectl apply -f svc.yaml
+$ kubectl get svc web
+NAME   TYPE        CLUSTER-IP     PORT(S)
+web    ClusterIP   10.96.12.34    80/TCP</pre></li>
+      <li>Call it from a throwaway client Pod, several times:
+<pre class="sh">$ kubectl run client --rm -it --image=busybox:1.36 --restart=Never -- sh
+/ # for i in 1 2 3 4 5 6; do wget -qO- web; done
+hi from web-7d9f8c6b5-abcde
+hi from web-7d9f8c6b5-q8w2r
+hi from web-7d9f8c6b5-xk2p9
+/ # nslookup web
+/ # exit</pre></li>
+      <li>Reach it from your laptop without changing the Service:
+<pre class="sh">$ kubectl port-forward svc/web 8080:80</pre></li>
+      <li>Try a NodePort:
+<pre class="sh">$ kubectl expose deployment web --name=web-np --type=NodePort --port=80
+$ kubectl get svc web-np
+web-np   NodePort   10.96.80.1   80:31234/TCP</pre>On kind, nodes are Docker containers, so test from inside: <code>docker exec fleet-worker curl -s localhost:31234</code>.</li>
+      <li>Break it on purpose: <code>kubectl patch svc web -p '{"spec":{"selector":{"app":"oops"}}}'</code>, check the EndpointSlice is empty, then fix it back to <code>app: web</code>.</li>
+    </ol>
+    <p class="note">On kind, <code>type: LoadBalancer</code> stays “pending” because there’s no cloud. Tools like MetalLB or <code>cloud-provider-kind</code> can fill that gap.</p>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Services give Pods a stable name, IP and load balancing.</li>
+    <li>ClusterIP inside, NodePort/LoadBalancer outside.</li>
+    <li>Empty endpoints = selector doesn’t match ready Pods.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="7"></div>
+  <div class="done-row"><button class="mark-done" data-done="7">Mark lesson complete</button><a class="nav-next" href="#l8">Next: Rolling updates</a></div>
+</section>
+<!-- ============ LESSON 8 ============ -->
+<section class="lesson" id="l8" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L8</div><h2>Rolling updates &amp; rollbacks</h2></div>
+  <p class="lesson-meta">About 20 minutes.</p>
+  <p class="goal">Ship a new version with zero downtime, and undo it in seconds if it’s bad.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>A relay team is running round a track and you want fresh runners. You don’t stop the race. A new runner joins, an old one steps off, then the next, then the next. The race never stops.</p>
+    <p>And if a new runner trips? You call the old runners back. That’s a <b>rollback</b>.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 250" role="img" aria-label="Rolling update steps replacing v1 pods with v2 pods one at a time">
+      <text x="20" y="40" class="t-b">step 1</text><text x="20" y="100" class="t-b">step 2</text><text x="20" y="160" class="t-b">step 3</text><text x="20" y="220" class="t-b">done</text>
+      <g><rect x="100" y="18" width="90" height="36" rx="18" class="d-teal"/><text x="145" y="42" text-anchor="middle" class="t">v1</text><rect x="200" y="18" width="90" height="36" rx="18" class="d-teal"/><text x="245" y="42" text-anchor="middle" class="t">v1</text><rect x="300" y="18" width="90" height="36" rx="18" class="d-teal"/><text x="345" y="42" text-anchor="middle" class="t">v1</text><rect x="400" y="18" width="90" height="36" rx="18" class="d-green pop"/><text x="445" y="42" text-anchor="middle" class="t">v2 ✨</text></g>
+      <g><rect x="100" y="78" width="90" height="36" rx="18" class="d-box"/><text x="145" y="102" text-anchor="middle" class="t-s">v1 leaving</text><rect x="200" y="78" width="90" height="36" rx="18" class="d-teal"/><text x="245" y="102" text-anchor="middle" class="t">v1</text><rect x="300" y="78" width="90" height="36" rx="18" class="d-teal"/><text x="345" y="102" text-anchor="middle" class="t">v1</text><rect x="400" y="78" width="90" height="36" rx="18" class="d-green"/><text x="445" y="102" text-anchor="middle" class="t">v2</text><rect x="500" y="78" width="90" height="36" rx="18" class="d-green pop"/><text x="545" y="102" text-anchor="middle" class="t">v2 ✨</text></g>
+      <g><rect x="300" y="138" width="90" height="36" rx="18" class="d-teal"/><text x="345" y="162" text-anchor="middle" class="t">v1</text><rect x="400" y="138" width="90" height="36" rx="18" class="d-green"/><text x="445" y="162" text-anchor="middle" class="t">v2</text><rect x="500" y="138" width="90" height="36" rx="18" class="d-green"/><text x="545" y="162" text-anchor="middle" class="t">v2</text><rect x="600" y="138" width="90" height="36" rx="18" class="d-green pop"/><text x="645" y="162" text-anchor="middle" class="t">v2 ✨</text></g>
+      <g><rect x="400" y="198" width="90" height="36" rx="18" class="d-green"/><text x="445" y="222" text-anchor="middle" class="t">v2</text><rect x="500" y="198" width="90" height="36" rx="18" class="d-green"/><text x="545" y="222" text-anchor="middle" class="t">v2</text><rect x="600" y="198" width="90" height="36" rx="18" class="d-green"/><text x="645" y="222" text-anchor="middle" class="t">v2</text></g>
+      <text x="230" y="225" text-anchor="middle" class="t-s">old ReplicaSet kept at 0 for rollback</text>
+    </svg></div>
+    <figcaption>New Pods must be Ready before old ones are removed, so users always have something serving them.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="deploy.yaml">spec:
+  replicas: 4
+  revisionHistoryLimit: 5       # keep 5 old ReplicaSets for rollback
+  minReadySeconds: 5            # a Pod must stay Ready 5s to count
+  strategy:
+    type: RollingUpdate         # or Recreate (kill all, then start all)
+    rollingUpdate:
+      maxSurge: 1               # at most 1 extra Pod during the update
+      maxUnavailable: 0         # never go below 4 ready Pods</pre>
+    <ul>
+      <li>Any change to the Pod <code>template</code> (image, env, labels…) triggers a rollout and a new ReplicaSet. Changing <code>replicas</code> doesn’t.</li>
+      <li>Rollouts depend on <b>readiness probes</b> (lesson 12). Without one, Kubernetes assumes a Pod is ready as soon as it starts, even if your app takes 30 seconds to boot.</li>
+      <li><b>Blue-green</b> (two full Deployments, switch the Service selector) and <b>canary</b> (send a small share of traffic to v2) are patterns built on top, often with tools like Argo Rollouts or a service mesh.</li>
+    </ul>
+    <p class="tip">Record why you changed something with an annotation: <code>kubectl annotate deploy web kubernetes.io/change-cause="upgrade to 1.27.1"</code>. It shows up in <code>rollout history</code>.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: swap the runners</div><div class="lab-body">
+    <ol class="steps">
+      <li>In one terminal, watch Pods: <code>kubectl get pods -l app=web -w</code>. In another, update the image:
+<pre class="sh">$ kubectl set image deployment/web web=nginx:1.27.1-alpine
+$ kubectl rollout status deployment/web
+Waiting for deployment "web" rollout to finish: 2 of 3 updated replicas are available...
+deployment "web" successfully rolled out</pre></li>
+      <li>See two ReplicaSets and the history:
+<pre class="sh">$ kubectl get rs -l app=web
+$ kubectl rollout history deployment/web</pre></li>
+      <li>Ship a broken version (this tag doesn’t exist):
+<pre class="sh">$ kubectl set image deployment/web web=nginx:does-not-exist
+$ kubectl get pods -l app=web
+web-5c…   0/1   ImagePullBackOff
+web-7d…   1/1   Running        ← old Pods still serving!</pre>The rollout stalls but your app stays up, because new Pods never become Ready.</li>
+      <li>Roll back:
+<pre class="sh">$ kubectl rollout undo deployment/web
+$ kubectl rollout undo deployment/web --to-revision=1   # or pick a revision</pre></li>
+      <li>Other handy rollout tools: <code>kubectl rollout pause|resume deployment/web</code> to batch changes, and <code>kubectl rollout restart deployment/web</code> to recycle all Pods (for example, to pick up a changed ConfigMap).</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Changing the Pod template starts a rolling update; old ReplicaSets enable rollback.</li>
+    <li><code>maxSurge</code> and <code>maxUnavailable</code> control the pace.</li>
+    <li><code>rollout status</code>, <code>history</code>, <code>undo</code>, <code>restart</code>.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="8"></div>
+  <div class="done-row"><button class="mark-done" data-done="8">Mark lesson complete</button><a class="nav-next" href="#l9">Next: ConfigMaps &amp; Secrets</a></div>
+</section>
+
+<!-- ============ LESSON 9 ============ -->
+<section class="lesson" id="l9" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L9</div><h2>ConfigMaps &amp; Secrets</h2></div>
+  <p class="lesson-meta">About 25 minutes.</p>
+  <p class="goal">Keep settings and passwords outside your image and feed them to Pods as variables or files.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>A <b>ConfigMap</b> is the <b>notice board</b> in the classroom: “Lunch is at 12. Today’s colour is blue.” Anyone can read it, and you can change it without changing the kids.</p>
+    <p>A <b>Secret</b> is a <b>sealed envelope</b> for things like the code to the treasure chest. Only kids who are allowed get to open it.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 240" role="img" aria-label="ConfigMap and Secret injected into a pod as environment variables and mounted files">
+      <rect x="20" y="30" width="200" height="80" rx="12" class="d-sun"/><text x="120" y="62" text-anchor="middle" class="t-b">📋 ConfigMap</text><text x="120" y="84" text-anchor="middle" class="t-m">LOG_LEVEL=info</text>
+      <rect x="20" y="140" width="200" height="80" rx="12" class="d-plum"/><text x="120" y="172" text-anchor="middle" class="t-b">✉️ Secret</text><text x="120" y="194" text-anchor="middle" class="t-m">DB_PASSWORD=••••</text>
+      <rect x="430" y="40" width="310" height="170" rx="80" class="d-green"/><text x="585" y="72" text-anchor="middle" class="t-b">🫛 Pod</text>
+      <rect x="470" y="90" width="230" height="40" rx="8" class="d-box"/><text x="585" y="115" text-anchor="middle" class="t-m">env: LOG_LEVEL, DB_PASSWORD</text>
+      <rect x="470" y="142" width="230" height="40" rx="8" class="d-box"/><text x="585" y="167" text-anchor="middle" class="t-m">files: /etc/app/config.yaml</text>
+      <path d="M222 70 L466 110" class="ln flow" marker-end="url(#ah)"/><text x="330" y="80" text-anchor="middle" class="t-s">as env vars</text>
+      <path d="M222 180 L466 162" class="ln flow" marker-end="url(#ah)"/><text x="330" y="196" text-anchor="middle" class="t-s">as mounted files</text>
+    </svg></div>
+    <figcaption>Same image, different settings per environment. Mounted files update live; env vars need a Pod restart.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="config.yaml">apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  LOG_LEVEL: "info"
+  FEATURE_X: "true"
+  config.yaml: |               # a whole file as one key
+    greeting: Hello from a ConfigMap
+    colour: blue
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+type: Opaque
+stringData:                    # plain text in; stored base64-encoded
+  DB_PASSWORD: "s3cr3t-pa55"</pre>
+<pre class="file" data-name="pod-config.yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: configured
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo $LOG_LEVEL $DB_PASSWORD; cat /etc/app/config.yaml; sleep 3600"]
+      envFrom:
+        - configMapRef: { name: app-config }   # every key becomes an env var
+      env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef: { name: app-secret, key: DB_PASSWORD }
+      volumeMounts:
+        - name: cfg
+          mountPath: /etc/app
+          readOnly: true
+  volumes:
+    - name: cfg
+      configMap:
+        name: app-config
+        items: [{ key: config.yaml, path: config.yaml }]</pre>
+    <p class="warn">Secrets are only <b>base64-encoded</b>, not encrypted. Anyone who can read them in the API can decode them in one command. Protect them with RBAC (lesson 17), turn on <b>encryption at rest</b> for etcd, never commit plain Secret YAML to git, and consider tools like External Secrets Operator, Sealed Secrets, or a cloud secret manager.</p>
+    <p class="tip">Mark a ConfigMap or Secret <code>immutable: true</code> when it should never change. It’s safer and lighter on the API server.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: notice board and envelope</div><div class="lab-body">
+    <ol class="steps">
+      <li>Apply both files and read the output:
+<pre class="sh">$ kubectl apply -f config.yaml -f pod-config.yaml
+$ kubectl logs configured
+info s3cr3t-pa55
+greeting: Hello from a ConfigMap
+colour: blue</pre></li>
+      <li>Prove Secrets aren’t really secret to anyone with read access:
+<pre class="sh">$ kubectl get secret app-secret -o jsonpath='{.data.DB_PASSWORD}' | base64 -d
+s3cr3t-pa55</pre></li>
+      <li>Create them from the command line too:
+<pre class="sh">$ kubectl create configmap colours --from-literal=sky=blue --from-file=./config.yaml
+$ kubectl create secret generic api-key --from-literal=key=abc123</pre></li>
+      <li>Change the ConfigMap’s <code>colour</code> to green with <code>kubectl edit configmap app-config</code>. Wait up to a minute, then <code>kubectl exec configured -- cat /etc/app/config.yaml</code>. The file updates; the env var doesn’t, until the Pod restarts.</li>
+      <li>Clean up: <code>kubectl delete pod configured</code></li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>ConfigMaps for settings, Secrets for sensitive values.</li>
+    <li>Inject as env vars or mounted files; files update live.</li>
+    <li>Secrets are base64, not encryption. Lock them down.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="9"></div>
+  <div class="done-row"><button class="mark-done" data-done="9">Mark lesson complete</button><a class="nav-next" href="#l10">Next: Storage</a></div>
+</section>
+
+<!-- ============ LESSON 10 ============ -->
+<section class="lesson" id="l10" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L10</div><h2>Storage: PV, PVC &amp; StorageClass</h2></div>
+  <p class="lesson-meta">About 25 minutes.</p>
+  <p class="goal">Data that survives Pods being deleted, rescheduled or moved to another node.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>You want a locker at school. You don’t go and build one. You fill in a <b>request slip</b>: “I need a medium locker, please.” That slip is a <b>PersistentVolumeClaim</b> (PVC).</p>
+    <p>The caretaker finds or builds a matching locker: that’s the <b>PersistentVolume</b> (PV). The <b>StorageClass</b> is the caretaker’s catalogue: “standard locker”, “fast locker”, “fireproof locker”. Even if you change classrooms, your locker and everything in it stays yours.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 230" role="img" aria-label="Pod uses a PVC which binds to a PV that the StorageClass provisions dynamically from real disk">
+      <rect x="20" y="80" width="130" height="70" rx="35" class="d-green"/><text x="85" y="112" text-anchor="middle" class="t-b">🫛 Pod</text><text x="85" y="132" text-anchor="middle" class="t-s">mounts /data</text>
+      <rect x="200" y="80" width="150" height="70" rx="10" class="d-sun"/><text x="275" y="110" text-anchor="middle" class="t-b">📝 PVC</text><text x="275" y="132" text-anchor="middle" class="t-s">“I need 1Gi”</text>
+      <rect x="400" y="80" width="150" height="70" rx="10" class="d-plum"/><text x="475" y="110" text-anchor="middle" class="t-b">🗄️ PV</text><text x="475" y="132" text-anchor="middle" class="t-s">the actual locker</text>
+      <rect x="600" y="80" width="140" height="70" rx="10" class="d-box"/><text x="670" y="110" text-anchor="middle" class="t-b">💽 real disk</text><text x="670" y="132" text-anchor="middle" class="t-s">EBS, PD, NFS…</text>
+      <rect x="370" y="10" width="210" height="44" rx="10" class="d-teal"/><text x="475" y="37" text-anchor="middle" class="t-b">📖 StorageClass</text>
+      <path d="M152 115 L196 115" class="ln flow" marker-end="url(#ah)"/>
+      <path d="M352 115 L396 115" class="ln-teal flow" marker-end="url(#ah)"/><text x="374" y="170" text-anchor="middle" class="t-s">binds</text>
+      <path d="M552 115 L596 115" class="ln flow" marker-end="url(#ah)"/>
+      <path d="M475 56 L475 76" class="ln flow" marker-end="url(#ah)"/><text x="560" y="72" class="t-s">creates on demand</text>
+      <text x="380" y="210" text-anchor="middle" class="t-s">Pod deleted → PVC and PV remain → new Pod mounts the same data</text>
+    </svg></div>
+    <figcaption>Apps ask for storage with a PVC; the cluster provides a PV. Apps never need to know which cloud disk it is.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <div class="table-wrap"><table>
+      <tr><th>Volume kind</th><th>Lifetime</th><th>Use</th></tr>
+      <tr><td><code>emptyDir</code></td><td>As long as the Pod</td><td>Scratch space shared by containers in a Pod</td></tr>
+      <tr><td><code>configMap</code> / <code>secret</code></td><td>Config-driven</td><td>Files from lesson 9</td></tr>
+      <tr><td><code>hostPath</code></td><td>Tied to one node</td><td>Node agents only. Avoid for apps.</td></tr>
+      <tr><td><code>persistentVolumeClaim</code></td><td>Independent of Pods</td><td>Databases, uploads, anything durable</td></tr>
+    </table></div>
+<pre class="file" data-name="pvc.yaml">apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: notes-data
+spec:
+  accessModes: ["ReadWriteOnce"]   # one node at a time
+  storageClassName: standard       # kind's default class
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: writer
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "echo \"$(date) hello\" &gt;&gt; /data/notes.txt; sleep 3600"]
+      volumeMounts:
+        - { name: data, mountPath: /data }
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: notes-data</pre>
+    <ul>
+      <li><b>Access modes</b>: ReadWriteOnce (one node), ReadOnlyMany, ReadWriteMany (many nodes, needs NFS/EFS-type storage), ReadWriteOncePod.</li>
+      <li><b>Reclaim policy</b>: <code>Delete</code> (dynamic default: deleting the PVC deletes the disk) or <code>Retain</code> (keep the disk for manual recovery). Use Retain for anything precious.</li>
+      <li><b>CSI drivers</b> connect Kubernetes to storage systems. <code>volumeBindingMode: WaitForFirstConsumer</code> creates the disk in the same zone as the Pod.</li>
+    </ul>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: your own locker</div><div class="lab-body">
+    <ol class="steps">
+      <li>See the catalogue, then ask for a locker:
+<pre class="sh">$ kubectl get storageclass
+NAME                 PROVISIONER             RECLAIMPOLICY   VOLUMEBINDINGMODE
+standard (default)   rancher.io/local-path   Delete          WaitForFirstConsumer
+$ kubectl apply -f pvc.yaml
+$ kubectl get pvc,pv</pre></li>
+      <li>Read the note, delete the Pod, recreate it, read again:
+<pre class="sh">$ kubectl exec writer -- cat /data/notes.txt
+$ kubectl delete pod writer
+$ kubectl apply -f pvc.yaml
+$ kubectl exec writer -- cat /data/notes.txt
+Mon … hello
+Mon … hello          ← two lines: the data survived</pre></li>
+      <li>Clean up: <code>kubectl delete -f pvc.yaml</code>. Then <code>kubectl get pv</code> shows the PV is gone too (reclaim policy Delete).</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>PVC = request, PV = the actual storage, StorageClass = how to make it.</li>
+    <li>Data in a PVC outlives Pods.</li>
+    <li>Choose access modes and reclaim policies on purpose.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="10"></div>
+  <div class="done-row"><button class="mark-done" data-done="10">Mark lesson complete</button><a class="nav-next" href="#l11">Next: Ingress</a></div>
+</section>
+
+<!-- ============ LESSON 11 ============ -->
+<section class="lesson" id="l11" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L11</div><h2>Ingress &amp; Gateway API</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">One front door that sends <code>shop.local/</code> to one service and <code>shop.local/api</code> to another.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>A big shopping mall has <b>one main entrance</b> with a <b>signpost</b>: “Toys → left, Food → right, Shoes → upstairs.” You don’t need a separate door for every shop.</p>
+    <p><b>Ingress</b> is the signpost. The <b>Ingress controller</b> is the security guard standing at the entrance who actually reads the signpost and points people the right way.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 260" role="img" aria-label="Internet traffic enters an ingress controller which routes by host and path to different services">
+      <rect x="20" y="100" width="120" height="60" rx="10" class="d-box"/><text x="80" y="135" text-anchor="middle" class="t-b">🌐 users</text>
+      <rect x="190" y="80" width="180" height="100" rx="12" class="d-sun"/><text x="280" y="110" text-anchor="middle" class="t-b">🚦 Ingress controller</text><text x="280" y="132" text-anchor="middle" class="t-s">e.g. ingress-nginx</text><text x="280" y="152" text-anchor="middle" class="t-s">TLS ends here 🔒</text>
+      <rect x="440" y="30" width="140" height="56" rx="10" class="d-teal"/><text x="510" y="55" text-anchor="middle" class="t-b">svc: web</text><text x="510" y="74" text-anchor="middle" class="t-m">shop.local/</text>
+      <rect x="440" y="110" width="140" height="56" rx="10" class="d-teal"/><text x="510" y="135" text-anchor="middle" class="t-b">svc: api</text><text x="510" y="154" text-anchor="middle" class="t-m">shop.local/api</text>
+      <rect x="440" y="190" width="140" height="56" rx="10" class="d-teal"/><text x="510" y="215" text-anchor="middle" class="t-b">svc: blog</text><text x="510" y="234" text-anchor="middle" class="t-m">blog.local</text>
+      <path d="M142 130 L186 130" class="ln flow" marker-end="url(#ah)"/>
+      <path d="M372 115 L436 58 M372 130 L436 138 M372 145 L436 218" class="ln-teal flow"/>
+      <rect x="620" y="30" width="120" height="56" rx="28" class="d-green"/><text x="680" y="63" text-anchor="middle" class="t">pods</text>
+      <rect x="620" y="110" width="120" height="56" rx="28" class="d-green"/><text x="680" y="143" text-anchor="middle" class="t">pods</text>
+      <rect x="620" y="190" width="120" height="56" rx="28" class="d-green"/><text x="680" y="223" text-anchor="middle" class="t">pods</text>
+      <path d="M582 58 L616 58 M582 138 L616 138 M582 218 L616 218" class="ln" />
+      <circle r="6" class="d-solid-rust"><animateMotion dur="2.4s" repeatCount="indefinite" path="M140 130 L280 130 L510 138 L680 138"/></circle>
+    </svg></div>
+    <figcaption>One entry point, routing by hostname and URL path, with HTTPS handled in one place.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="ingress.yaml">apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shop
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shop.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service: { name: api, port: { number: 80 } }
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: web, port: { number: 80 } }
+  # tls:
+  #   - hosts: [shop.local]
+  #     secretName: shop-tls      # cert-manager can create this automatically</pre>
+    <ul>
+      <li>An Ingress object does nothing on its own. You need an <b>Ingress controller</b> installed (ingress-nginx, Traefik, HAProxy, or a cloud one).</li>
+      <li><b>cert-manager</b> automatically gets and renews free TLS certificates from Let’s Encrypt.</li>
+      <li><b>Gateway API</b> is the newer, more expressive successor (<code>GatewayClass</code>, <code>Gateway</code>, <code>HTTPRoute</code>), with built-in traffic splitting and a cleaner split between platform and app teams. New projects should consider it.</li>
+    </ul>
+<pre class="file" data-name="httproute.yaml">apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: shop
+spec:
+  parentRefs: [{ name: main-gateway }]
+  hostnames: ["shop.local"]
+  rules:
+    - matches: [{ path: { type: PathPrefix, value: /api } }]
+      backendRefs:
+        - { name: api, port: 80, weight: 90 }
+        - { name: api-v2, port: 80, weight: 10 }   # 10% canary!</pre>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: put up the signpost</div><div class="lab-body">
+    <p>This uses the port 80 mapping from the <code>kind.yaml</code> in lesson 3.</p>
+    <ol class="steps">
+      <li>Install the ingress-nginx controller built for kind, and wait for it:
+<pre class="sh">$ kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
+$ kubectl wait -n ingress-nginx --for=condition=ready pod -l app.kubernetes.io/component=controller --timeout=120s</pre></li>
+      <li>Create two small apps that say who they are:
+<pre class="sh">$ kubectl create deployment api --image=hashicorp/http-echo:1.0 -- /http-echo -text="I am the API" -listen=:80
+$ kubectl expose deployment api --port=80
+$ kubectl get svc web     # from lesson 7; recreate if you deleted it</pre></li>
+      <li>Apply the Ingress, then add <code>127.0.0.1 shop.local</code> to your hosts file (<code>/etc/hosts</code>, or <code>C:\Windows\System32\drivers\etc\hosts</code> as admin).
+<pre class="sh">$ kubectl apply -f ingress.yaml
+$ curl http://shop.local/api
+I am the API
+$ curl http://shop.local/
+hi from web-…</pre></li>
+      <li>No hosts-file access? Send the host header yourself: <code>curl -H "Host: shop.local" http://localhost/api</code>.</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Ingress = HTTP routing rules; a controller enforces them.</li>
+    <li>Route by host and path; handle TLS in one place.</li>
+    <li>Gateway API is the modern successor with traffic splitting.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="11"></div>
+  <div class="done-row"><button class="mark-done" data-done="11">Mark lesson complete</button><a class="nav-next" href="#l12">Next: Probes &amp; resources</a></div>
+</section>
+
+<!-- ============ LESSON 12 ============ -->
+<section class="lesson" id="l12" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L12</div><h2>Probes, requests &amp; limits</h2></div>
+  <p class="lesson-meta">About 30 minutes. Skipping this lesson is the most common cause of production outages.</p>
+  <p class="goal">Kubernetes knows when your app is alive and ready, and how much CPU and memory it needs.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>Three questions a teacher asks every child:</p>
+    <p><b>“Are you awake?”</b> If not, gently wake them up again (that’s a <b>liveness probe</b>: restart if stuck). <b>“Are you ready to answer questions?”</b> If not, don’t ask them yet; ask someone else (<b>readiness probe</b>: no traffic until ready). <b>“Have you finished getting dressed?”</b> Slow dressers get extra time before the other questions start (<b>startup probe</b>).</p>
+    <p>And at lunch: each child is <b>promised</b> at least one sandwich (<b>request</b>) and <b>can’t take more than</b> three (<b>limit</b>).</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 260" role="img" aria-label="Three probes and what happens when each fails; plus a bar showing request and limit for memory">
+      <rect x="20" y="20" width="230" height="110" rx="12" class="d-plum"/><text x="135" y="48" text-anchor="middle" class="t-b">🚀 startup</text><text x="135" y="72" text-anchor="middle" class="t-s">“done booting?”</text><text x="135" y="100" text-anchor="middle" class="t-s">fail too long → restart</text><text x="135" y="118" text-anchor="middle" class="t-s">holds other probes back</text>
+      <rect x="265" y="20" width="230" height="110" rx="12" class="d-sun"/><text x="380" y="48" text-anchor="middle" class="t-b">🚦 readiness</text><text x="380" y="72" text-anchor="middle" class="t-s">“can you take traffic?”</text><text x="380" y="100" text-anchor="middle" class="t-s">fail → removed from Service</text><text x="380" y="118" text-anchor="middle" class="t-s">(not restarted)</text>
+      <rect x="510" y="20" width="230" height="110" rx="12" class="d-red"/><text x="625" y="48" text-anchor="middle" class="t-b">💓 liveness</text><text x="625" y="72" text-anchor="middle" class="t-s">“are you stuck?”</text><text x="625" y="100" text-anchor="middle" class="t-s">fail → container restarted</text>
+      <text x="380" y="170" text-anchor="middle" class="t-b">Memory for one container</text>
+      <rect x="80" y="185" width="600" height="34" rx="6" class="d-box"/>
+      <rect x="80" y="185" width="180" height="34" rx="6" class="d-green"/><text x="170" y="207" text-anchor="middle" class="t-m">request 128Mi</text>
+      <rect x="260" y="185" width="200" height="34" class="d-sun"/><text x="360" y="207" text-anchor="middle" class="t-m">may burst</text>
+      <line x1="460" y1="178" x2="460" y2="228" stroke="var(--red)" stroke-width="3"/><text x="465" y="245" class="t-s" style="fill:var(--red)">limit 256Mi → OOMKilled</text>
+      <rect x="80" y="223" width="10" height="8" class="d-solid-rust"><animate attributeName="width" values="10;420;10" dur="5s" repeatCount="indefinite"/></rect>
+      <text x="80" y="250" class="t-s">scheduler reserves the request</text>
+    </svg></div>
+    <figcaption>Readiness controls traffic, liveness controls restarts. Requests are for scheduling, limits are hard caps.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="deploy-probes.yaml">containers:
+  - name: api
+    image: ghcr.io/you/api:1.4.0
+    ports: [{ containerPort: 8080 }]
+    resources:
+      requests:
+        cpu: "250m"          # a quarter of a CPU core
+        memory: "128Mi"
+      limits:
+        memory: "256Mi"      # over this → OOMKilled
+        # cpu limit optional: over it the app is throttled, not killed
+    startupProbe:
+      httpGet: { path: /healthz, port: 8080 }
+      failureThreshold: 30
+      periodSeconds: 2       # up to 60s to start
+    readinessProbe:
+      httpGet: { path: /ready, port: 8080 }
+      periodSeconds: 5
+    livenessProbe:
+      httpGet: { path: /healthz, port: 8080 }
+      periodSeconds: 10
+      failureThreshold: 3</pre>
+    <ul>
+      <li>Probe types: <code>httpGet</code>, <code>tcpSocket</code>, <code>exec</code> (a command), <code>grpc</code>.</li>
+      <li>A readiness endpoint can check dependencies (database reachable). A liveness endpoint should <b>not</b>, or a database outage will restart every Pod in a loop.</li>
+      <li><b>QoS classes</b>: <i>Guaranteed</i> (requests = limits for all), <i>Burstable</i> (some requests), <i>BestEffort</i> (nothing set: evicted first when a node runs short).</li>
+      <li>Namespace-level guardrails: <b>LimitRange</b> sets defaults per container; <b>ResourceQuota</b> caps a namespace’s total.</li>
+    </ul>
+    <p class="tip">Units: CPU <code>1</code> = one core = <code>1000m</code>. Memory <code>Mi</code>/<code>Gi</code> are powers of two; <code>M</code>/<code>G</code> are powers of ten.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: wake-up calls</div><div class="lab-body">
+    <ol class="steps">
+      <li>A Pod whose liveness file disappears after 30 seconds:
+<pre class="file" data-name="liveness.yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: sleepy
+spec:
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sh", "-c", "touch /tmp/alive; sleep 30; rm /tmp/alive; sleep 600"]
+      livenessProbe:
+        exec: { command: ["cat", "/tmp/alive"] }
+        initialDelaySeconds: 5
+        periodSeconds: 5</pre>
+<pre class="sh">$ kubectl apply -f liveness.yaml
+$ kubectl get pod sleepy -w
+sleepy   1/1   Running   0     40s
+sleepy   1/1   Running   1 (2s ago)   52s     ← restarted
+$ kubectl describe pod sleepy | grep -A3 Liveness</pre></li>
+      <li>Readiness without restarts: make one <code>web</code> Pod unready and watch the Service skip it.
+<pre class="sh">$ kubectl patch deployment web --type=json -p='[{"op":"add","path":"/spec/template/spec/containers/0/readinessProbe","value":{"exec":{"command":["cat","/tmp/ready"]},"periodSeconds":3}}]'
+$ kubectl get pods -l app=web       # 0/1 READY: no /tmp/ready yet
+$ kubectl exec POD_NAME -- touch /tmp/ready
+$ kubectl get endpointslices -l kubernetes.io/service-name=web</pre></li>
+      <li>Get OOMKilled on purpose:
+<pre class="file" data-name="hog.yaml">apiVersion: v1
+kind: Pod
+metadata:
+  name: hog
+spec:
+  restartPolicy: Never
+  containers:
+    - name: hog
+      image: polinux/stress
+      command: ["stress", "--vm", "1", "--vm-bytes", "100M"]
+      resources:
+        limits: { memory: "50Mi" }</pre>
+<pre class="sh">$ kubectl apply -f hog.yaml
+$ kubectl get pod hog
+hog   0/1   OOMKilled</pre></li>
+      <li>See what nodes have promised: <code>kubectl describe node fleet-worker | grep -A8 "Allocated resources"</code>. Clean up: <code>kubectl delete pod sleepy hog</code>.</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Startup = slow boot, readiness = traffic on/off, liveness = restart if stuck.</li>
+    <li>Always set memory requests and limits; set CPU requests.</li>
+    <li>Don’t check dependencies in liveness probes.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="12"></div>
+  <div class="done-row"><button class="mark-done" data-done="12">Mark lesson complete</button><a class="nav-next" href="#l13">Next: Other workloads</a></div>
+</section>
+
+<!-- ============ LESSON 13 ============ -->
+<section class="lesson" id="l13" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L13</div><h2>StatefulSets, DaemonSets, Jobs &amp; CronJobs</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">You’ll pick the right workload type for databases, per-node agents, one-off tasks and schedules.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p><b>Deployment</b>: identical robots. Any robot can replace any other.</p>
+    <p><b>StatefulSet</b>: kids with <b>name tags and their own cubby</b>: Anna-0, Ben-1, Cara-2. If Ben goes home and comes back, he’s still Ben-1 and his cubby is waiting.</p>
+    <p><b>DaemonSet</b>: <b>one guard per door</b>. Add a new door (node), and a new guard appears there automatically.</p>
+    <p><b>Job</b>: “Tidy the room once, then you’re done.” <b>CronJob</b>: “Tidy the room every evening at 7.”</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 270" role="img" aria-label="Four workload types: Deployment with interchangeable pods, StatefulSet with numbered pods and their own volumes, DaemonSet with one pod per node, Job running to completion">
+      <rect x="10" y="10" width="365" height="120" rx="12" class="d-box"/><text x="25" y="34" class="t-b">Deployment</text>
+      <rect x="30" y="55" width="90" height="40" rx="20" class="d-teal"/><text x="75" y="80" text-anchor="middle" class="t-s">web-x7k2p</text><rect x="135" y="55" width="90" height="40" rx="20" class="d-teal"/><text x="180" y="80" text-anchor="middle" class="t-s">web-q9w1z</text><rect x="240" y="55" width="90" height="40" rx="20" class="d-teal"/><text x="285" y="80" text-anchor="middle" class="t-s">web-m3n8b</text>
+      <text x="190" y="118" text-anchor="middle" class="t-s">random names, interchangeable, shared or no storage</text>
+      <rect x="385" y="10" width="365" height="120" rx="12" class="d-box"/><text x="400" y="34" class="t-b">StatefulSet</text>
+      <rect x="405" y="45" width="90" height="36" rx="18" class="d-plum"/><text x="450" y="68" text-anchor="middle" class="t-s">db-0 (primary)</text><rect x="510" y="45" width="90" height="36" rx="18" class="d-plum"/><text x="555" y="68" text-anchor="middle" class="t-s">db-1</text><rect x="615" y="45" width="90" height="36" rx="18" class="d-plum"/><text x="660" y="68" text-anchor="middle" class="t-s">db-2</text>
+      <rect x="420" y="88" width="60" height="22" rx="4" class="d-sun"/><text x="450" y="104" text-anchor="middle" class="t-s">pvc-0</text><rect x="525" y="88" width="60" height="22" rx="4" class="d-sun"/><text x="555" y="104" text-anchor="middle" class="t-s">pvc-1</text><rect x="630" y="88" width="60" height="22" rx="4" class="d-sun"/><text x="660" y="104" text-anchor="middle" class="t-s">pvc-2</text>
+      <text x="565" y="124" text-anchor="middle" class="t-s">stable names, ordered start, own disk each</text>
+      <rect x="10" y="140" width="365" height="120" rx="12" class="d-box"/><text x="25" y="164" class="t-b">DaemonSet</text>
+      <rect x="30" y="178" width="100" height="60" rx="8" class="d-box"/><rect x="140" y="178" width="100" height="60" rx="8" class="d-box"/><rect x="250" y="178" width="100" height="60" rx="8" class="d-box" stroke-dasharray="5 4"/>
+      <text x="80" y="196" text-anchor="middle" class="t-s">node A</text><text x="190" y="196" text-anchor="middle" class="t-s">node B</text><text x="300" y="196" text-anchor="middle" class="t-s">new node</text>
+      <rect x="45" y="205" width="70" height="24" rx="12" class="d-green"/><text x="80" y="222" text-anchor="middle" class="t-s">agent</text><rect x="155" y="205" width="70" height="24" rx="12" class="d-green"/><text x="190" y="222" text-anchor="middle" class="t-s">agent</text><rect x="265" y="205" width="70" height="24" rx="12" class="d-green pop"/><text x="300" y="222" text-anchor="middle" class="t-s pop">agent ✨</text>
+      <rect x="385" y="140" width="365" height="120" rx="12" class="d-box"/><text x="400" y="164" class="t-b">Job / CronJob</text>
+      <rect x="405" y="185" width="110" height="40" rx="20" class="d-sun"/><text x="460" y="210" text-anchor="middle" class="t-s">run ▶</text>
+      <rect x="535" y="185" width="110" height="40" rx="20" class="d-green"/><text x="590" y="210" text-anchor="middle" class="t-s">Completed ✔</text>
+      <path d="M517 205 L531 205" class="ln" marker-end="url(#ah)"/>
+      <text x="700" y="210" text-anchor="middle" class="t-m">⏰ 0 2 * * *</text>
+      <text x="565" y="248" text-anchor="middle" class="t-s">runs to completion, retries on failure</text>
+    </svg></div>
+    <figcaption>Pick the controller by asking: do Pods need identity? one per node? or a finish line?</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="statefulset.yaml">apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  clusterIP: None            # headless: gives each Pod its own DNS name
+  selector: { app: db }
+  ports: [{ port: 6379 }]
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+spec:
+  serviceName: db
+  replicas: 3
+  selector:
+    matchLabels: { app: db }
+  template:
+    metadata:
+      labels: { app: db }
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          volumeMounts: [{ name: data, mountPath: /data }]
+  volumeClaimTemplates:      # one PVC per Pod: data-db-0, data-db-1…
+    - metadata: { name: data }
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources: { requests: { storage: 1Gi } }</pre>
+<pre class="file" data-name="cronjob.yaml">apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: tidy
+spec:
+  schedule: "*/1 * * * *"          # every minute (min hour day month weekday)
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: tidy
+              image: busybox:1.36
+              command: ["sh", "-c", "date; echo tidying up"]</pre>
+    <p>Each StatefulSet Pod gets a DNS name like <code>db-0.db.default.svc.cluster.local</code>. Jobs support <code>completions</code> and <code>parallelism</code> for batch work. DaemonSets are how log collectors, monitoring agents and network plugins run on every node.</p>
+    <p class="note">Running production databases in Kubernetes is possible but demands care (backups, upgrades, failover). Many teams use a managed cloud database or a well-tested <b>operator</b> (lesson 20) instead.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: name tags and chores</div><div class="lab-body">
+    <ol class="steps">
+      <li>Watch ordered startup and stable names:
+<pre class="sh">$ kubectl apply -f statefulset.yaml
+$ kubectl get pods -l app=db -w
+db-0  Running … then db-1 … then db-2
+$ kubectl get pvc</pre></li>
+      <li>Write data to db-1, delete it, and check it comes back as db-1 with its data:
+<pre class="sh">$ kubectl exec db-1 -- redis-cli set pet "Rex"
+$ kubectl delete pod db-1
+$ kubectl exec db-1 -- redis-cli get pet
+"Rex"</pre></li>
+      <li>Reach a specific Pod by name: <code>kubectl run c --rm -it --image=redis:7-alpine --restart=Never -- redis-cli -h db-0.db ping</code></li>
+      <li>A one-off Job and a CronJob:
+<pre class="sh">$ kubectl create job hello --image=busybox:1.36 -- echo "job done"
+$ kubectl logs job/hello
+$ kubectl apply -f cronjob.yaml
+$ kubectl get jobs -w            # a new Job every minute</pre></li>
+      <li>See the DaemonSets your cluster already runs: <code>kubectl get daemonsets -A</code> (kube-proxy and the network plugin are on every node).</li>
+      <li>Clean up: <code>kubectl delete -f statefulset.yaml -f cronjob.yaml</code>, <code>kubectl delete job hello</code>, and <code>kubectl delete pvc -l app=db</code> (StatefulSet PVCs are kept on purpose until you delete them).</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>StatefulSet: stable identity and storage per Pod.</li>
+    <li>DaemonSet: one Pod per node.</li>
+    <li>Job: run to completion. CronJob: on a schedule.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="13"></div>
+  <div class="done-row"><button class="mark-done" data-done="13">Mark lesson complete</button><a class="nav-next" href="#l14">Next: Debugging</a></div>
+</section>
+
+<!-- ============ LESSON 14 ============ -->
+<section class="lesson" id="l14" data-level="2">
+  <div class="lesson-head"><div class="lesson-no">L14</div><h2>Debugging like a detective</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">A calm, step-by-step method for any “it’s not working” in Kubernetes.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>When a toy train stops, you check in order: <b>Is it on the track?</b> (scheduled) <b>Does it have batteries?</b> (image pulled, container started) <b>Is it moving?</b> (running, not crashing) <b>Are the stations connected?</b> (Service and Ingress). Start at the first station and walk along the line.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 320" role="img" aria-label="Debugging flow from pod status to causes and commands">
+      <rect x="280" y="10" width="200" height="44" rx="22" class="d-red"/><text x="380" y="38" text-anchor="middle" class="t-b">🔍 kubectl get pods</text>
+      <rect x="10" y="90" width="175" height="60" rx="10" class="d-sun"/><text x="97" y="115" text-anchor="middle" class="t-b">Pending</text><text x="97" y="136" text-anchor="middle" class="t-s">not scheduled</text>
+      <rect x="200" y="90" width="175" height="60" rx="10" class="d-sun"/><text x="287" y="115" text-anchor="middle" class="t-b">ImagePullBackOff</text><text x="287" y="136" text-anchor="middle" class="t-s">can’t get the image</text>
+      <rect x="390" y="90" width="175" height="60" rx="10" class="d-sun"/><text x="477" y="115" text-anchor="middle" class="t-b">CrashLoopBackOff</text><text x="477" y="136" text-anchor="middle" class="t-s">starts, then dies</text>
+      <rect x="580" y="90" width="170" height="60" rx="10" class="d-sun"/><text x="665" y="115" text-anchor="middle" class="t-b">Running, but…</text><text x="665" y="136" text-anchor="middle" class="t-s">can’t reach it</text>
+      <path d="M330 56 L100 86 M360 56 L287 86 M400 56 L477 86 M430 56 L665 86" class="ln flow"/>
+      <rect x="10" y="175" width="175" height="130" rx="10" class="d-box"/><text x="97" y="198" text-anchor="middle" class="t-m">describe pod → Events</text><text x="97" y="226" text-anchor="middle" class="t-s">not enough CPU/memory</text><text x="97" y="246" text-anchor="middle" class="t-s">PVC not bound</text><text x="97" y="266" text-anchor="middle" class="t-s">taints / nodeSelector</text>
+      <rect x="200" y="175" width="175" height="130" rx="10" class="d-box"/><text x="287" y="198" text-anchor="middle" class="t-m">describe pod → Events</text><text x="287" y="226" text-anchor="middle" class="t-s">typo in image or tag</text><text x="287" y="246" text-anchor="middle" class="t-s">private registry:</text><text x="287" y="266" text-anchor="middle" class="t-s">missing imagePullSecret</text>
+      <rect x="390" y="175" width="175" height="130" rx="10" class="d-box"/><text x="477" y="198" text-anchor="middle" class="t-m">logs --previous</text><text x="477" y="226" text-anchor="middle" class="t-s">app error, bad config</text><text x="477" y="246" text-anchor="middle" class="t-s">OOMKilled (exit 137)</text><text x="477" y="266" text-anchor="middle" class="t-s">liveness probe too strict</text>
+      <rect x="580" y="175" width="170" height="130" rx="10" class="d-box"/><text x="665" y="198" text-anchor="middle" class="t-m">get endpointslices</text><text x="665" y="226" text-anchor="middle" class="t-s">selector mismatch</text><text x="665" y="246" text-anchor="middle" class="t-s">wrong targetPort</text><text x="665" y="266" text-anchor="middle" class="t-s">not Ready / NetworkPolicy</text>
+      <path d="M97 152 L97 171 M287 152 L287 171 M477 152 L477 171 M665 152 L665 171" class="ln" marker-end="url(#ah)"/>
+    </svg></div>
+    <figcaption>The STATUS column tells you which branch to walk down.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The detective’s toolkit</div>
+    <div class="table-wrap"><table>
+      <tr><th>Question</th><th>Command</th></tr>
+      <tr><td>What’s the state of everything?</td><td><code>kubectl get all -n NS</code>, <code>kubectl get pods -o wide</code></td></tr>
+      <tr><td>Why is this Pod unhappy?</td><td><code>kubectl describe pod NAME</code> (read Events at the bottom)</td></tr>
+      <tr><td>What happened recently in the namespace?</td><td><code>kubectl get events --sort-by=.lastTimestamp</code></td></tr>
+      <tr><td>What did it print before crashing?</td><td><code>kubectl logs NAME --previous</code> (and <code>-c CONTAINER</code>)</td></tr>
+      <tr><td>Logs from all Pods of a Deployment</td><td><code>kubectl logs deploy/web --all-containers -f</code> or <code>-l app=web</code></td></tr>
+      <tr><td>Get a shell</td><td><code>kubectl exec -it NAME -- sh</code></td></tr>
+      <tr><td>No shell in the image (distroless)?</td><td><code>kubectl debug -it NAME --image=busybox:1.36 --target=CONTAINER</code></td></tr>
+      <tr><td>Debug the node itself</td><td><code>kubectl debug node/NODE -it --image=busybox:1.36</code></td></tr>
+      <tr><td>Test DNS and connectivity</td><td><code>kubectl run t --rm -it --image=nicolaka/netshoot -- bash</code>, then <code>dig</code>, <code>curl</code></td></tr>
+      <tr><td>Is something out of resources?</td><td><code>kubectl top nodes</code> / <code>top pods</code> (needs metrics-server)</td></tr>
+      <tr><td>Am I allowed to do this?</td><td><code>kubectl auth can-i create deployments -n NS</code></td></tr>
+    </table></div>
+    <p class="tip">The k9s terminal UI makes all of this faster once you know the underlying commands.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: solve four mysteries</div><div class="lab-body">
+    <p>Run each, diagnose it yourself, then check the solution.</p>
+    <ol class="steps">
+      <li><b>The phantom image</b>: <code>kubectl create deployment m1 --image=ngnix:1.27</code>
+        <details class="solution"><summary>Solution</summary><p>Status <code>ImagePullBackOff</code>. <code>describe</code> shows “pull access denied… ngnix”. Typo: it’s <code>nginx</code>. Fix with <code>kubectl set image deploy/m1 ngnix=nginx:1.27</code> (the container was named after the bad image).</p></details></li>
+      <li><b>The greedy giant</b>: <code>kubectl create deployment m2 --image=nginx:1.27-alpine</code> then <code>kubectl set resources deploy m2 --requests=cpu=50,memory=1Ti</code>
+        <details class="solution"><summary>Solution</summary><p>Status <code>Pending</code>. Events: “0/3 nodes are available: Insufficient cpu, Insufficient memory.” Requests must fit on a node. Set realistic values like <code>cpu=100m,memory=64Mi</code>.</p></details></li>
+      <li><b>The fainting app</b>: <code>kubectl create deployment m3 --image=busybox:1.36 -- sh -c "echo starting; exit 1"</code>
+        <details class="solution"><summary>Solution</summary><p><code>CrashLoopBackOff</code> with growing restart delays. <code>kubectl logs deploy/m3 --previous</code> shows “starting”, and <code>describe</code> shows exit code 1. The program exits with an error; fix the command or app.</p></details></li>
+      <li><b>The silent Service</b>:
+<pre class="sh">$ kubectl create deployment m4 --image=nginx:1.27-alpine
+$ kubectl create service clusterip m4 --tcp=80:8080
+$ kubectl run t --rm -it --image=busybox:1.36 --restart=Never -- wget -qO- -T 3 m4</pre>
+        <details class="solution"><summary>Solution</summary><p>Timeout. The EndpointSlice has the Pod, but on port 8080, and nginx listens on 80. The Service’s <code>targetPort</code> must be the container port: <code>kubectl patch svc m4 -p '{"spec":{"ports":[{"port":80,"targetPort":80}]}}'</code>.</p></details></li>
+    </ol>
+    <p>Clean up: <code>kubectl delete deploy m1 m2 m3 m4</code> and <code>kubectl delete svc m4</code>.</p>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Read STATUS, then <code>describe</code> (Events), then <code>logs --previous</code>.</li>
+    <li>Service trouble: check EndpointSlices, selectors, and targetPort.</li>
+    <li><code>kubectl debug</code> for images without shells.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="14"></div>
+  <div class="done-row"><button class="mark-done" data-done="14">Mark lesson complete</button><a class="nav-next" href="#l15">Next: Scheduling</a></div>
+</section>
+<!-- ============ LESSON 15 ============ -->
+<section class="lesson" id="l15" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">L15</div><h2>Scheduling: affinity, taints &amp; spreading</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">You can control which nodes Pods land on, and keep copies spread out so one failure can’t take everything down.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>Seating kids at a party:</p>
+    <p><b>nodeSelector / node affinity</b>: “Kids who need a high chair sit at the table <i>with</i> high chairs.” <b>Taints and tolerations</b>: a table has a sign “<b>Grown-ups only</b>”. Kids can’t sit there unless they have a special pass (a toleration). <b>Pod anti-affinity / topology spread</b>: “Don’t put all the twins at the same table. If that table tips over, we lose all the twins!”</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 260" role="img" aria-label="Three nodes: a GPU node with a taint only accepts tolerating pods; web replicas are spread one per zone">
+      <rect x="20" y="40" width="220" height="190" rx="12" class="d-box"/><text x="130" y="64" text-anchor="middle" class="t-b">node A, zone a</text>
+      <rect x="270" y="40" width="220" height="190" rx="12" class="d-box"/><text x="380" y="64" text-anchor="middle" class="t-b">node B, zone b</text>
+      <rect x="520" y="40" width="220" height="190" rx="12" class="d-red"/><text x="630" y="64" text-anchor="middle" class="t-b">node C, GPU 🎮</text>
+      <text x="630" y="86" text-anchor="middle" class="t-m">taint: gpu=true:NoSchedule</text>
+      <rect x="60" y="100" width="140" height="40" rx="20" class="d-teal"/><text x="130" y="125" text-anchor="middle" class="t">web-1</text>
+      <rect x="310" y="100" width="140" height="40" rx="20" class="d-teal"/><text x="380" y="125" text-anchor="middle" class="t">web-2</text>
+      <rect x="560" y="110" width="140" height="40" rx="20" class="d-green"/><text x="630" y="135" text-anchor="middle" class="t">ml-job ✅ tolerates</text>
+      <rect x="560" y="170" width="140" height="40" rx="20" class="d-box" stroke-dasharray="5 4"/><text x="630" y="195" text-anchor="middle" class="t-s">web-3 ✖ blocked</text>
+      <rect x="60" y="160" width="140" height="40" rx="20" class="d-teal pop"/><text x="130" y="185" text-anchor="middle" class="t pop">web-3 → spread</text>
+      <text x="255" y="252" text-anchor="middle" class="t-s">topologySpreadConstraints keep web copies balanced across zones</text>
+    </svg></div>
+    <figcaption>Taints repel; tolerations allow; affinity attracts; spread constraints balance.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <div class="table-wrap"><table>
+      <tr><th>Tool</th><th>Set on</th><th>Effect</th></tr>
+      <tr><td><code>nodeSelector</code></td><td>Pod</td><td>Simple “only nodes with this label”</td></tr>
+      <tr><td><code>nodeAffinity</code></td><td>Pod</td><td>Required or preferred rules with operators (In, NotIn, Exists…)</td></tr>
+      <tr><td><code>podAffinity</code> / <code>podAntiAffinity</code></td><td>Pod</td><td>Near or away from other Pods (e.g. cache next to app, replicas apart)</td></tr>
+      <tr><td><code>topologySpreadConstraints</code></td><td>Pod</td><td>Even spread across zones/nodes with a max skew</td></tr>
+      <tr><td>Taint</td><td>Node</td><td><code>NoSchedule</code>, <code>PreferNoSchedule</code>, <code>NoExecute</code> (also evicts)</td></tr>
+      <tr><td>Toleration</td><td>Pod</td><td>Permission to land on a tainted node (doesn’t force it there)</td></tr>
+      <tr><td>PriorityClass</td><td>Pod</td><td>Important Pods can pre-empt less important ones</td></tr>
+      <tr><td>PodDisruptionBudget</td><td>Workload</td><td>Limits how many Pods voluntary disruptions (drains, upgrades) may take down</td></tr>
+    </table></div>
+<pre class="file" data-name="spread.yaml">spec:
+  template:
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname   # or topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector: { matchLabels: { app: web } }
+      tolerations:
+        - key: gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - { key: disktype, operator: In, values: [ssd] }</pre>
+<pre class="file" data-name="pdb.yaml">apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-pdb
+spec:
+  minAvailable: 2
+  selector: { matchLabels: { app: web } }</pre>
+    <p class="note">To place a Pod <i>only</i> on special nodes, combine a taint (keeps others off) with node affinity (pulls yours on). A toleration alone just allows it.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: party seating</div><div class="lab-body">
+    <ol class="steps">
+      <li>Label a node and pin a Pod to it:
+<pre class="sh">$ kubectl label node fleet-worker2 disktype=ssd
+$ kubectl run fast --image=nginx:1.27-alpine --overrides='{"spec":{"nodeSelector":{"disktype":"ssd"}}}'
+$ kubectl get pod fast -o wide      # on fleet-worker2</pre></li>
+      <li>Taint a node and see Pods avoid it:
+<pre class="sh">$ kubectl taint node fleet-worker gpu=true:NoSchedule
+$ kubectl create deployment spread --image=nginx:1.27-alpine --replicas=4
+$ kubectl get pods -l app=spread -o wide    # all on fleet-worker2</pre></li>
+      <li>Remove the taint and drain a node like you would for maintenance:
+<pre class="sh">$ kubectl taint node fleet-worker gpu=true:NoSchedule-
+$ kubectl rollout restart deploy spread        # rebalance
+$ kubectl cordon fleet-worker2                 # no new Pods
+$ kubectl drain fleet-worker2 --ignore-daemonsets --delete-emptydir-data
+$ kubectl get pods -o wide                     # moved to fleet-worker
+$ kubectl uncordon fleet-worker2</pre></li>
+      <li>Clean up: <code>kubectl delete deploy spread</code>, <code>kubectl delete pod fast</code>, <code>kubectl label node fleet-worker2 disktype-</code></li>
+    </ol>
+    <div class="challenge">Apply <code>pdb.yaml</code> with a 3-replica <code>web</code> Deployment on a single worker, then try to drain it. Watch drain wait politely because of the budget.</div>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Affinity attracts, taints repel, tolerations permit.</li>
+    <li>Spread replicas across nodes and zones for resilience.</li>
+    <li><code>cordon</code> / <code>drain</code> / <code>uncordon</code> for maintenance; PDBs keep enough Pods up.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="15"></div>
+  <div class="done-row"><button class="mark-done" data-done="15">Mark lesson complete</button><a class="nav-next" href="#l16">Next: Autoscaling</a></div>
+</section>
+
+<!-- ============ LESSON 16 ============ -->
+<section class="lesson" id="l16" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">L16</div><h2>Autoscaling</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">Your app grows when busy and shrinks when quiet, by itself.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>An ice-cream shop on a hot day: a long queue forms, so the manager calls in <b>more servers</b> (more Pods: <b>Horizontal</b> autoscaling). If one server is struggling, give them a <b>bigger scoop</b> (more CPU/memory per Pod: <b>Vertical</b> autoscaling). If the shop is completely full of servers, <b>open the room next door</b> (more nodes: <b>Cluster</b> autoscaling). When evening comes, everyone goes home again.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 260" role="img" aria-label="CPU load rises, the HPA adds pods; when nodes are full the cluster autoscaler adds a node">
+      <rect x="20" y="20" width="200" height="90" rx="10" class="d-box"/><text x="120" y="44" text-anchor="middle" class="t-b">📈 CPU use</text>
+      <polyline points="35,95 60,90 85,80 110,60 135,45 160,50 185,70 205,88" class="ln-rust"/>
+      <line x1="30" y1="65" x2="210" y2="65" stroke="var(--teal)" stroke-dasharray="4 4"/><text x="210" y="60" text-anchor="end" class="t-s">target 50%</text>
+      <rect x="260" y="35" width="170" height="60" rx="10" class="d-sun"/><text x="345" y="62" text-anchor="middle" class="t-b">HPA</text><text x="345" y="82" text-anchor="middle" class="t-s">min 2, max 10</text>
+      <path d="M222 65 L256 65" class="ln flow" marker-end="url(#ah)"/>
+      <rect x="470" y="20" width="270" height="110" rx="12" class="d-box"/><text x="605" y="42" text-anchor="middle" class="t-b">Deployment replicas</text>
+      <rect x="490" y="60" width="40" height="40" rx="20" class="d-teal"/><rect x="540" y="60" width="40" height="40" rx="20" class="d-teal"/>
+      <rect x="590" y="60" width="40" height="40" rx="20" class="d-green pop"/><rect x="640" y="60" width="40" height="40" rx="20" class="d-green pop" style="animation-delay:.4s"/><rect x="690" y="60" width="40" height="40" rx="20" class="d-green pop" style="animation-delay:.8s"/>
+      <path d="M432 65 L466 65" class="ln flow" marker-end="url(#ah)"/>
+      <rect x="20" y="160" width="220" height="80" rx="10" class="d-box"/><text x="130" y="188" text-anchor="middle" class="t">node 1: full 🥵</text><text x="130" y="212" text-anchor="middle" class="t-s">new Pods stay Pending</text>
+      <rect x="290" y="165" width="190" height="70" rx="10" class="d-plum"/><text x="385" y="195" text-anchor="middle" class="t-b">Cluster Autoscaler</text><text x="385" y="215" text-anchor="middle" class="t-s">or Karpenter</text>
+      <rect x="530" y="160" width="210" height="80" rx="10" class="d-green pop"/><text x="635" y="196" text-anchor="middle" class="t-b">node 2 ✨</text><text x="635" y="218" text-anchor="middle" class="t-s">added by the cloud</text>
+      <path d="M242 200 L286 200" class="ln flow" marker-end="url(#ah)"/><path d="M482 200 L526 200" class="ln flow" marker-end="url(#ah)"/>
+    </svg></div>
+    <figcaption>HPA scales Pods on metrics; Cluster Autoscaler adds nodes when Pods can’t fit.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="hpa.yaml">apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: php
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: php
+  minReplicas: 1
+  maxReplicas: 8
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target: { type: Utilization, averageUtilization: 50 }   # % of the CPU request
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120    # avoid flapping</pre>
+    <ul>
+      <li>The HPA needs <b>metrics-server</b> and CPU <b>requests</b> on the Pods: utilisation is measured against the request.</li>
+      <li>Custom and external metrics (queue length, requests per second) work via Prometheus Adapter or <b>KEDA</b>, which can also scale to zero.</li>
+      <li><b>VPA</b> recommends or sets requests; don’t let VPA and HPA both act on CPU for the same workload.</li>
+      <li><b>Cluster Autoscaler</b> and <b>Karpenter</b> add or remove nodes in the cloud based on Pending Pods and idle nodes.</li>
+    </ul>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: summer rush</div><div class="lab-body">
+    <ol class="steps">
+      <li>Install metrics-server (kind needs the insecure-TLS flag):
+<pre class="sh">$ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+$ kubectl patch deployment metrics-server -n kube-system --type=json -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
+$ kubectl top nodes        # wait a minute until numbers appear</pre></li>
+      <li>Deploy a CPU-hungry demo app with a CPU request:
+<pre class="sh">$ kubectl create deployment php --image=registry.k8s.io/hpa-example
+$ kubectl set resources deployment php --requests=cpu=200m
+$ kubectl expose deployment php --port=80
+$ kubectl apply -f hpa.yaml</pre></li>
+      <li>Open the floodgates in another terminal:
+<pre class="sh">$ kubectl run load --rm -it --image=busybox:1.36 --restart=Never -- sh -c "while true; do wget -q -O- http://php; done"</pre></li>
+      <li>Watch the shop hire more staff:
+<pre class="sh">$ kubectl get hpa php -w
+NAME   TARGETS         MINPODS   MAXPODS   REPLICAS
+php    cpu: 250%/50%   1         8         1
+php    cpu: 120%/50%   1         8         5</pre></li>
+      <li>Stop the load with <kbd>Ctrl</kbd>+<kbd>C</kbd> and watch replicas drift back down after the stabilisation window. Clean up: <code>kubectl delete hpa php</code>, <code>kubectl delete deploy,svc php</code>.</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>HPA = more Pods; VPA = bigger Pods; Cluster Autoscaler = more nodes.</li>
+    <li>HPA on CPU needs metrics-server and CPU requests.</li>
+    <li>KEDA scales on events and can scale to zero.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="16"></div>
+  <div class="done-row"><button class="mark-done" data-done="16">Mark lesson complete</button><a class="nav-next" href="#l17">Next: Security</a></div>
+</section>
+
+<!-- ============ LESSON 17 ============ -->
+<section class="lesson" id="l17" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">L17</div><h2>Security: RBAC, Pod security &amp; NetworkPolicy</h2></div>
+  <p class="lesson-meta">About 35 minutes.</p>
+  <p class="goal">Least privilege for people, apps, containers and network traffic.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>In a school: <b>who</b> you are is your <b>badge</b> (a user or ServiceAccount). <b>What you’re allowed to do</b> is on a <b>rule card</b>: “May read the library books, may not touch the piano” (a <b>Role</b>). Giving someone a rule card is a <b>RoleBinding</b>.</p>
+    <p><b>Pod security</b> is the dress code: “No climbing gear on the roof” (no running as root, no special powers). <b>NetworkPolicy</b> is the hallway rules: “Kids from class A may only walk into the art room, nowhere else.”</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 270" role="img" aria-label="RBAC: subject bound by RoleBinding to Role with verbs on resources. NetworkPolicy allows web to api, api to db, blocks web to db">
+      <text x="190" y="24" text-anchor="middle" class="t-b">RBAC</text>
+      <rect x="20" y="40" width="110" height="60" rx="10" class="d-teal"/><text x="75" y="66" text-anchor="middle" class="t-b">🪪 who</text><text x="75" y="86" text-anchor="middle" class="t-s">user / SA</text>
+      <rect x="140" y="40" width="110" height="60" rx="10" class="d-sun"/><text x="195" y="66" text-anchor="middle" class="t-b">🔗 binding</text><text x="195" y="86" text-anchor="middle" class="t-s">RoleBinding</text>
+      <rect x="260" y="40" width="110" height="60" rx="10" class="d-plum"/><text x="315" y="66" text-anchor="middle" class="t-b">📜 Role</text><text x="315" y="86" text-anchor="middle" class="t-s">verbs+resources</text>
+      <text x="195" y="128" text-anchor="middle" class="t-m">get, list pods in “shop” ✅</text>
+      <text x="195" y="150" text-anchor="middle" class="t-m">delete secrets ❌</text>
+      <line x1="390" y1="10" x2="390" y2="260" class="ln" stroke-dasharray="4 6"/>
+      <text x="575" y="24" text-anchor="middle" class="t-b">NetworkPolicy</text>
+      <rect x="420" y="60" width="90" height="44" rx="22" class="d-teal"/><text x="465" y="87" text-anchor="middle" class="t">web</text>
+      <rect x="530" y="140" width="90" height="44" rx="22" class="d-teal"/><text x="575" y="167" text-anchor="middle" class="t">api</text>
+      <rect x="640" y="60" width="90" height="44" rx="22" class="d-sun"/><text x="685" y="87" text-anchor="middle" class="t">db</text>
+      <path d="M480 106 L545 138" class="ln-teal flow" marker-end="url(#ah)"/><text x="495" y="135" class="t-s">✅</text>
+      <path d="M605 138 L670 106" class="ln-teal flow" marker-end="url(#ah)"/><text x="645" y="135" class="t-s">✅</text>
+      <path d="M512 82 L636 82" class="ln" stroke-dasharray="4 4"/><text x="575" y="76" text-anchor="middle" class="t-b" style="fill:var(--red)">✖</text>
+      <text x="575" y="225" text-anchor="middle" class="t-s">default-deny, then allow only</text><text x="575" y="243" text-anchor="middle" class="t-s">the paths you need</text>
+    </svg></div>
+    <figcaption>RBAC controls the API. NetworkPolicy controls Pod-to-Pod traffic.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+<pre class="file" data-name="rbac.yaml">apiVersion: v1
+kind: ServiceAccount
+metadata: { name: reader, namespace: shop }
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: { name: pod-reader, namespace: shop }
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: { name: reader-binding, namespace: shop }
+subjects:
+  - { kind: ServiceAccount, name: reader, namespace: shop }
+roleRef:
+  { kind: Role, name: pod-reader, apiGroup: rbac.authorization.k8s.io }</pre>
+    <p><b>Role</b>/<b>RoleBinding</b> are per namespace; <b>ClusterRole</b>/<b>ClusterRoleBinding</b> are cluster-wide. Pods use a <b>ServiceAccount</b> identity; set <code>automountServiceAccountToken: false</code> when a Pod doesn’t need the API.</p>
+<pre class="file" data-name="secure-pod.yaml">spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    seccompProfile: { type: RuntimeDefault }
+  containers:
+    - name: app
+      image: ghcr.io/you/api:1.4.0
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities: { drop: ["ALL"] }</pre>
+    <p><b>Pod Security Admission</b> enforces standards per namespace with labels: <code>pod-security.kubernetes.io/enforce: restricted</code> (or <code>baseline</code>, <code>privileged</code>). Policy engines like Kyverno or OPA Gatekeeper add custom rules (“images must come from our registry”).</p>
+<pre class="file" data-name="netpol.yaml">apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: default-deny, namespace: shop }
+spec:
+  podSelector: {}               # every Pod in the namespace
+  policyTypes: [Ingress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: { name: api-from-web, namespace: shop }
+spec:
+  podSelector: { matchLabels: { app: api } }
+  ingress:
+    - from: [{ podSelector: { matchLabels: { app: web } } }]
+      ports: [{ port: 80 }]</pre>
+    <p class="warn">NetworkPolicies only work if your network plugin (CNI) enforces them: Calico, Cilium and others do. kind’s default plugin, kindnet, supports them only in recent versions; if the lab below doesn’t block traffic, that’s why.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: badges and hallways</div><div class="lab-body">
+    <ol class="steps">
+      <li>Create the namespace and RBAC, then test as the ServiceAccount:
+<pre class="sh">$ kubectl create namespace shop
+$ kubectl apply -f rbac.yaml
+$ kubectl auth can-i list pods -n shop --as=system:serviceaccount:shop:reader
+yes
+$ kubectl auth can-i delete pods -n shop --as=system:serviceaccount:shop:reader
+no
+$ kubectl auth can-i list secrets -n shop --as=system:serviceaccount:shop:reader
+no</pre></li>
+      <li>Enforce the restricted Pod Security Standard and try a root Pod:
+<pre class="sh">$ kubectl label namespace shop pod-security.kubernetes.io/enforce=restricted
+$ kubectl run bad -n shop --image=nginx:1.27-alpine
+Error from server (Forbidden): violates PodSecurity "restricted:latest": allowPrivilegeEscalation != false …</pre></li>
+      <li>Network rules: remove the PSA label for this step (<code>kubectl label ns shop pod-security.kubernetes.io/enforce-</code>), then:
+<pre class="sh">$ kubectl run api -n shop --image=nginx:1.27-alpine -l app=api --expose --port=80
+$ kubectl run web -n shop --image=busybox:1.36 -l app=web -- sleep 3600
+$ kubectl run other -n shop --image=busybox:1.36 -l app=other -- sleep 3600
+$ kubectl apply -f netpol.yaml
+$ kubectl exec -n shop web -- wget -qO- -T 3 api | head -n 1     # allowed
+$ kubectl exec -n shop other -- wget -qO- -T 3 api               # times out</pre></li>
+      <li>Clean up: <code>kubectl delete namespace shop</code></li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>RBAC: subject + binding + role. Grant the minimum.</li>
+    <li>Non-root, read-only filesystem, drop capabilities; enforce with Pod Security Admission.</li>
+    <li>Default-deny NetworkPolicies, then allow specific paths.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="17"></div>
+  <div class="done-row"><button class="mark-done" data-done="17">Mark lesson complete</button><a class="nav-next" href="#l18">Next: Helm &amp; Kustomize</a></div>
+</section>
+
+<!-- ============ LESSON 18 ============ -->
+<section class="lesson" id="l18" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">L18</div><h2>Helm &amp; Kustomize</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">Package and reuse your YAML across environments without copy-paste.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>You have to make birthday invitations for ten friends. Writing each one from scratch is silly.</p>
+    <p><b>Helm</b> is a <b>fill-in-the-blanks card</b>: “Dear ____, come to my party at ____.” You fill in the blanks (values) and print. You can even download ready-made card packs from a shop (chart repositories).</p>
+    <p><b>Kustomize</b> is a <b>stack of stickers</b>: one plain card, plus a “for grandma” sticker that changes the time, plus a “for cousins” sticker that adds a map. No blanks, just layers on top.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 240" role="img" aria-label="Helm: chart templates plus values produce manifests and a release. Kustomize: base plus overlays produce manifests">
+      <text x="190" y="24" text-anchor="middle" class="t-b">Helm</text>
+      <rect x="20" y="40" width="140" height="60" rx="10" class="d-sun"/><text x="90" y="66" text-anchor="middle" class="t-b">templates/</text><text x="90" y="86" text-anchor="middle" class="t-m">{{ .Values.x }}</text>
+      <rect x="20" y="120" width="140" height="50" rx="10" class="d-plum"/><text x="90" y="150" text-anchor="middle" class="t-m">values-prod.yaml</text>
+      <rect x="230" y="70" width="140" height="70" rx="10" class="d-green"/><text x="300" y="100" text-anchor="middle" class="t-b">release v3</text><text x="300" y="122" text-anchor="middle" class="t-s">upgrade / rollback</text>
+      <path d="M162 70 L226 95 M162 145 L226 115" class="ln-teal flow"/>
+      <line x1="390" y1="10" x2="390" y2="230" class="ln" stroke-dasharray="4 6"/>
+      <text x="575" y="24" text-anchor="middle" class="t-b">Kustomize</text>
+      <rect x="420" y="160" width="300" height="50" rx="10" class="d-box"/><text x="570" y="190" text-anchor="middle" class="t-b">base/ (plain YAML)</text>
+      <rect x="440" y="100" width="260" height="46" rx="10" class="d-sun pop"/><text x="570" y="128" text-anchor="middle" class="t">overlay prod: replicas 5</text>
+      <rect x="460" y="44" width="220" height="44" rx="10" class="d-plum pop" style="animation-delay:.6s"/><text x="570" y="71" text-anchor="middle" class="t">+ image tag 1.4.0</text>
+    </svg></div>
+    <figcaption>Helm templates and versions releases; Kustomize patches plain YAML. Both are widely used, often together.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <h4>Helm</h4>
+<pre class="sh">$ helm repo add bitnami https://charts.bitnami.com/bitnami
+$ helm search repo redis
+$ helm install cache bitnami/redis --set architecture=standalone -n data --create-namespace
+$ helm list -A
+$ helm upgrade cache bitnami/redis -f my-values.yaml -n data
+$ helm rollback cache 1 -n data
+$ helm uninstall cache -n data</pre>
+    <p>A chart is a folder: <code>Chart.yaml</code> (name, version), <code>values.yaml</code> (defaults), <code>templates/</code> (Go-templated YAML). <code>helm create mychart</code> scaffolds one, <code>helm template</code> renders it locally, and <code>helm lint</code> checks it.</p>
+<pre class="file" data-name="templates/deployment.yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    spec:
+      containers:
+        - name: web
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"</pre>
+    <h4>Kustomize (built into kubectl)</h4>
+<pre class="file" data-name="overlays/prod/kustomization.yaml">resources:
+  - ../../base
+namespace: prod
+namePrefix: prod-
+images:
+  - name: ghcr.io/you/api
+    newTag: "1.4.0"
+patches:
+  - target: { kind: Deployment, name: api }
+    patch: |
+      - op: replace
+        path: /spec/replicas
+        value: 5
+configMapGenerator:
+  - name: api-config
+    literals: [LOG_LEVEL=warn]</pre>
+<pre class="sh">$ kubectl kustomize overlays/prod       # preview
+$ kubectl apply -k overlays/prod        # apply</pre>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: cards and stickers</div><div class="lab-body">
+    <ol class="steps">
+      <li>Install Helm (<code>brew install helm</code>, <code>winget install Helm.Helm</code>, or the script on helm.sh).</li>
+      <li>Scaffold, render and install your own chart:
+<pre class="sh">$ helm create hello
+$ helm template demo ./hello | head -n 40
+$ helm install demo ./hello --set replicaCount=2
+$ kubectl get pods -l app.kubernetes.io/instance=demo
+$ helm upgrade demo ./hello --set replicaCount=3
+$ helm history demo
+$ helm rollback demo 1
+$ helm uninstall demo</pre></li>
+      <li>Kustomize: make <code>base/</code> containing your lesson-6 <code>deploy.yaml</code> and a <code>kustomization.yaml</code> with <code>resources: [deploy.yaml]</code>. Make <code>overlays/dev/kustomization.yaml</code> setting <code>namePrefix: dev-</code> and replicas 1. Run <code>kubectl kustomize overlays/dev</code> and compare.</li>
+    </ol>
+    <details class="solution"><summary>Show the dev overlay</summary>
+<pre class="file" data-name="overlays/dev/kustomization.yaml">resources:
+  - ../../base
+namePrefix: dev-
+labels:
+  - pairs: { env: dev }
+replicas:
+  - name: web
+    count: 1</pre></details>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Helm: templated, versioned packages with install/upgrade/rollback.</li>
+    <li>Kustomize: base + overlays, no templating, built into kubectl.</li>
+    <li>Always render and review before applying.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="18"></div>
+  <div class="done-row"><button class="mark-done" data-done="18">Mark lesson complete</button><a class="nav-next" href="#l19">Next: Observability</a></div>
+</section>
+
+<!-- ============ LESSON 19 ============ -->
+<section class="lesson" id="l19" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">L19</div><h2>Observability: logs, metrics &amp; traces</h2></div>
+  <p class="lesson-meta">About 30 minutes.</p>
+  <p class="goal">You can see what your cluster and apps are doing, and get told when something goes wrong.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p>A doctor checking on you uses three tools. The <b>diary</b> where you wrote what happened today (<b>logs</b>). The <b>thermometer and heart-rate monitor</b> showing numbers over time (<b>metrics</b>). And following you around the hospital to see which rooms you visited and how long you waited in each (<b>traces</b>). An <b>alarm</b> beeps when your temperature is too high (<b>alerts</b>).</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 250" role="img" aria-label="Pods emit logs, metrics and traces collected by agents into Loki, Prometheus and Tempo, shown in Grafana with alerts">
+      <rect x="20" y="80" width="130" height="90" rx="45" class="d-green"/><text x="85" y="120" text-anchor="middle" class="t-b">pods</text><text x="85" y="140" text-anchor="middle" class="t-s">your app</text>
+      <rect x="230" y="20" width="160" height="56" rx="10" class="d-sun"/><text x="310" y="44" text-anchor="middle" class="t-b">📓 logs</text><text x="310" y="64" text-anchor="middle" class="t-s">Fluent Bit → Loki</text>
+      <rect x="230" y="97" width="160" height="56" rx="10" class="d-teal"/><text x="310" y="121" text-anchor="middle" class="t-b">🌡️ metrics</text><text x="310" y="141" text-anchor="middle" class="t-s">Prometheus</text>
+      <rect x="230" y="174" width="160" height="56" rx="10" class="d-plum"/><text x="310" y="198" text-anchor="middle" class="t-b">🧭 traces</text><text x="310" y="218" text-anchor="middle" class="t-s">OpenTelemetry → Tempo</text>
+      <rect x="470" y="80" width="140" height="90" rx="12" class="d-box"/><text x="540" y="118" text-anchor="middle" class="t-b">📊 Grafana</text><text x="540" y="140" text-anchor="middle" class="t-s">dashboards</text>
+      <rect x="640" y="95" width="100" height="60" rx="10" class="d-red blink"/><text x="690" y="122" text-anchor="middle" class="t-b">🚨</text><text x="690" y="142" text-anchor="middle" class="t-s">alerts</text>
+      <path d="M152 110 L226 48 M152 125 L226 125 M152 140 L226 202" class="ln flow"/>
+      <path d="M392 48 L466 110 M392 125 L466 125 M392 202 L466 140" class="ln-teal flow"/>
+      <path d="M612 125 L636 125" class="ln" marker-end="url(#ah)"/>
+    </svg></div>
+    <figcaption>A common open-source stack. Cloud providers offer managed equivalents.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <ul>
+      <li><b>Logs</b>: write to stdout/stderr, ideally as structured JSON. The kubelet stores them per container; a DaemonSet agent (Fluent Bit, Vector, Promtail/Alloy) ships them to Loki, Elasticsearch or a cloud service before Pods disappear.</li>
+      <li><b>Metrics</b>: Prometheus scrapes <code>/metrics</code> endpoints. <b>kube-state-metrics</b> exposes object state (desired vs available replicas); <b>node-exporter</b> exposes machine stats. The <b>kube-prometheus-stack</b> Helm chart installs all of it plus Grafana and Alertmanager.</li>
+      <li><b>Traces</b>: instrument apps with <b>OpenTelemetry</b> to follow one request across services.</li>
+      <li>Watch the <b>four golden signals</b>: latency, traffic, errors, saturation. Alert on symptoms users feel, not on every blip.</li>
+    </ul>
+<pre class="file" data-name="alert-rule.yaml">groups:
+  - name: app
+    rules:
+      - alert: PodCrashLooping
+        expr: increase(kube_pod_container_status_restarts_total[10m]) &gt; 3
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $labels.namespace }}/{{ $labels.pod }} restarting often"</pre>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: the doctor’s kit</div><div class="lab-body">
+    <ol class="steps">
+      <li>Install the monitoring stack with Helm (it’s big; give it a few minutes):
+<pre class="sh">$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+$ helm install mon prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+$ kubectl get pods -n monitoring -w</pre></li>
+      <li>Open Grafana:
+<pre class="sh">$ kubectl get secret -n monitoring mon-grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
+$ kubectl port-forward -n monitoring svc/mon-grafana 3000:80</pre>Log in at <code>http://localhost:3000</code> as <code>admin</code>. Browse Dashboards → “Kubernetes / Compute Resources / Namespace (Pods)”.</li>
+      <li>Query Prometheus directly:
+<pre class="sh">$ kubectl port-forward -n monitoring svc/mon-kube-prometheus-stack-prometheus 9090</pre>Try <code>sum(rate(container_cpu_usage_seconds_total{namespace="default"}[5m])) by (pod)</code>. (Service names can vary slightly by chart version; check <code>kubectl get svc -n monitoring</code>.)</li>
+      <li>Create a crash-looping Pod (<code>kubectl create deployment boom --image=busybox:1.36 -- sh -c "exit 1"</code>) and find its restarts on a dashboard. Delete it afterwards.</li>
+      <li>When done: <code>helm uninstall mon -n monitoring</code> to free your laptop’s memory.</li>
+    </ol>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>Logs tell what happened, metrics show trends, traces show the path.</li>
+    <li>Log to stdout; ship logs off the node.</li>
+    <li>kube-prometheus-stack gives you Prometheus, Grafana and alerts in one install.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="19"></div>
+  <div class="done-row"><button class="mark-done" data-done="19">Mark lesson complete</button><a class="nav-next" href="#l20">Next: GitOps &amp; operators</a></div>
+</section>
+
+<!-- ============ LESSON 20 ============ -->
+<section class="lesson" id="l20" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">L20</div><h2>GitOps, operators &amp; CRDs</h2></div>
+  <p class="lesson-meta">About 35 minutes.</p>
+  <p class="goal">Git becomes the single source of truth for your cluster, and you understand how Kubernetes is extended.</p>
+
+  <div class="eli5"><div class="tag">Explain like I’m 5</div>
+    <p><b>GitOps</b>: the class has one <b>official rulebook</b> on the teacher’s desk (a git repository). A helper robot constantly compares the classroom with the rulebook. If someone moves a desk without changing the rulebook, the robot moves it back. Want a change? Write it in the rulebook first, and the robot does the rest.</p>
+    <p><b>CRDs and operators</b>: Kubernetes knows words like Pod and Service. A <b>CRD</b> teaches it a <b>new word</b>, like “Database”. An <b>operator</b> is an expert robot that knows what to do with that word: create the database, back it up every night, repair it if it breaks.</p>
+  </div>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 240" role="img" aria-label="Developer pushes to git; CI builds image and updates manifests; Argo CD in the cluster pulls git and syncs; drift is reverted">
+      <rect x="20" y="90" width="110" height="60" rx="10" class="d-box"/><text x="75" y="118" text-anchor="middle" class="t-b">👩‍💻 dev</text><text x="75" y="138" text-anchor="middle" class="t-s">pull request</text>
+      <rect x="170" y="90" width="130" height="60" rx="10" class="d-sun"/><text x="235" y="118" text-anchor="middle" class="t-b">🏗️ CI</text><text x="235" y="138" text-anchor="middle" class="t-s">build, test, push</text>
+      <rect x="340" y="90" width="140" height="60" rx="10" class="d-plum"/><text x="410" y="118" text-anchor="middle" class="t-b">📒 Git repo</text><text x="410" y="138" text-anchor="middle" class="t-s">desired state</text>
+      <rect x="540" y="40" width="200" height="160" rx="14" class="d-teal"/><text x="640" y="64" text-anchor="middle" class="t-b">🏝️ cluster</text>
+      <rect x="560" y="80" width="160" height="44" rx="10" class="d-box"/><text x="640" y="107" text-anchor="middle" class="t-b">Argo CD / Flux</text>
+      <rect x="560" y="140" width="160" height="44" rx="10" class="d-green"/><text x="640" y="167" text-anchor="middle" class="t">apps in sync ✅</text>
+      <path d="M132 120 L166 120" class="ln" marker-end="url(#ah)"/><path d="M302 120 L336 120" class="ln" marker-end="url(#ah)"/><text x="319" y="112" text-anchor="middle" class="t-s">new tag</text>
+      <path d="M556 102 L482 112" class="ln-teal flow" marker-end="url(#ah)"/><text x="520" y="92" text-anchor="middle" class="t-s">pull</text>
+      <path d="M640 126 L640 136" class="ln" marker-end="url(#ah)"/>
+      <text x="380" y="210" text-anchor="middle" class="t-s">manual kubectl edits = drift → reverted automatically</text>
+    </svg></div>
+    <figcaption>Pull-based delivery: the cluster pulls from git; CI never needs cluster admin credentials.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">The engineer’s view</div>
+    <h4>GitOps</h4>
+    <ul>
+      <li>All manifests (plain, Kustomize or Helm values) live in git. Changes happen through reviewed pull requests, giving you an audit log and easy rollback with <code>git revert</code>.</li>
+      <li><b>Argo CD</b> and <b>Flux</b> run inside the cluster, watch the repo, and sync. They report drift and can self-heal it.</li>
+      <li>Common split: an <b>app repo</b> (code + Dockerfile; CI builds images) and a <b>config repo</b> (manifests; CI or a bot bumps the image tag).</li>
+    </ul>
+<pre class="file" data-name="argocd-app.yaml">apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argocd-example-apps
+    path: guestbook
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: guestbook
+  syncPolicy:
+    automated: { prune: true, selfHeal: true }
+    syncOptions: [CreateNamespace=true]</pre>
+    <h4>CRDs and operators</h4>
+<pre class="file" data-name="crd-example.yaml">apiVersion: postgresql.cnpg.io/v1
+kind: Cluster                  # a new kind, added by a CRD
+metadata:
+  name: notes-db
+spec:
+  instances: 3                 # the operator creates 3 Postgres Pods,
+  storage: { size: 1Gi }       # replication, failover and backups</pre>
+    <p>An operator is a custom controller running the same reconciliation loop as Kubernetes’ built-in controllers, but encoding expert knowledge for one system. Popular ones: CloudNativePG, Strimzi (Kafka), cert-manager, Prometheus Operator. Frameworks like Kubebuilder and Operator SDK help you write your own.</p>
+  </div>
+
+  <div class="lab"><div class="lab-head">Hands-on: the rulebook robot</div><div class="lab-body">
+    <ol class="steps">
+      <li>Install Argo CD:
+<pre class="sh">$ kubectl create namespace argocd
+$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+$ kubectl wait -n argocd --for=condition=available deploy --all --timeout=300s</pre></li>
+      <li>Open the UI and log in as <code>admin</code>:
+<pre class="sh">$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d; echo
+$ kubectl port-forward -n argocd svc/argocd-server 8443:443</pre>Visit <code>https://localhost:8443</code> and accept the self-signed certificate warning.</li>
+      <li>Create the Application and watch it sync:
+<pre class="sh">$ kubectl apply -f argocd-app.yaml
+$ kubectl get pods -n guestbook</pre></li>
+      <li>Cause drift and watch self-healing:
+<pre class="sh">$ kubectl scale deploy guestbook-ui -n guestbook --replicas=5
+$ kubectl get deploy -n guestbook -w      # snaps back to git’s value</pre></li>
+      <li>See CRDs in your cluster: <code>kubectl get crd</code>. Argo CD added several, including <code>applications.argoproj.io</code>. Try <code>kubectl explain application.spec</code>.</li>
+      <li>Clean up: <code>kubectl delete -f argocd-app.yaml</code> then <code>kubectl delete namespace argocd guestbook</code>.</li>
+    </ol>
+    <div class="challenge">Fork the example repo, point <code>repoURL</code> at your fork, change the replica count in git, push, and watch Argo CD apply it with no kubectl at all.</div>
+  </div></div>
+
+  <div class="takeaways"><h4>Remember</h4><ul>
+    <li>GitOps: git is the source of truth; an in-cluster agent syncs and heals drift.</li>
+    <li>CRDs add new object types; operators run the expert logic behind them.</li>
+    <li>Everything in Kubernetes is the same idea: declare, then reconcile.</li>
+  </ul></div>
+  <div class="quiz" data-quiz="20"></div>
+  <div class="done-row"><button class="mark-done" data-done="20">Mark lesson complete</button><a class="nav-next" href="#capstone">Next: Capstone project</a></div>
+</section>
+<!-- ============ CAPSTONE ============ -->
+<section class="lesson" id="capstone" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">⚓</div><h2>Capstone: run a production-style app</h2></div>
+  <p class="lesson-meta">3–6 hours. Uses everything.</p>
+  <p class="goal">A notes app with web front end, API, Redis cache and PostgreSQL, deployed to your cluster the way real teams do it.</p>
+
+  <figure class="diagram"><div class="scroll">
+    <svg viewBox="0 0 760 310" role="img" aria-label="Capstone architecture inside namespace notes: ingress routes to web and api deployments; api uses redis and a postgres statefulset; HPA scales api; network policies restrict traffic">
+      <rect x="10" y="125" width="100" height="56" rx="10" class="d-box"/><text x="60" y="158" text-anchor="middle" class="t-b">🌐 users</text>
+      <rect x="140" y="20" width="610" height="280" rx="16" class="d-box" stroke-dasharray="8 6"/><text x="160" y="44" class="t-b">namespace: notes (PSA restricted, default-deny)</text>
+      <rect x="160" y="118" width="120" height="70" rx="10" class="d-sun"/><text x="220" y="146" text-anchor="middle" class="t-b">Ingress</text><text x="220" y="166" text-anchor="middle" class="t-s">notes.local + TLS</text>
+      <rect x="320" y="60" width="150" height="60" rx="10" class="d-teal"/><text x="395" y="86" text-anchor="middle" class="t-b">web ×2</text><text x="395" y="106" text-anchor="middle" class="t-s">Deployment</text>
+      <rect x="320" y="185" width="150" height="70" rx="10" class="d-teal"/><text x="395" y="210" text-anchor="middle" class="t-b">api ×2–6</text><text x="395" y="230" text-anchor="middle" class="t-s">Deployment + HPA</text><text x="395" y="246" text-anchor="middle" class="t-s">probes, limits, PDB</text>
+      <rect x="560" y="70" width="170" height="70" rx="10" class="d-plum"/><text x="645" y="98" text-anchor="middle" class="t-b">🐘 postgres</text><text x="645" y="118" text-anchor="middle" class="t-s">StatefulSet + PVC</text>
+      <rect x="560" y="190" width="170" height="60" rx="10" class="d-red"/><text x="645" y="218" text-anchor="middle" class="t-b">⚡ redis</text><text x="645" y="238" text-anchor="middle" class="t-s">Deployment</text>
+      <path d="M112 153 L156 153" class="ln flow" marker-end="url(#ah)"/>
+      <path d="M282 140 L316 92" class="ln-teal flow" marker-end="url(#ah)"/><text x="292" y="108" class="t-m">/</text>
+      <path d="M282 166 L316 214" class="ln-teal flow" marker-end="url(#ah)"/><text x="288" y="205" class="t-m">/api</text>
+      <path d="M472 205 L556 115" class="ln flow" marker-end="url(#ah)"/><path d="M472 222 L556 222" class="ln flow" marker-end="url(#ah)"/>
+      <circle r="6" class="d-solid-rust"><animateMotion dur="3s" repeatCount="indefinite" path="M110 153 L220 153 L395 220 L645 105"/></circle>
+    </svg></div>
+    <figcaption>Ingress is the only way in. NetworkPolicies allow only the arrows shown.</figcaption>
+  </figure>
+
+  <div class="pro"><div class="tag">Requirements checklist</div>
+    <ol>
+      <li><b>Images</b>: build <code>web</code> and <code>api</code> images (any language). The API offers <code>GET/POST /api/notes</code> stored in Postgres, a visit counter in Redis, <code>/healthz</code> and <code>/ready</code>, and returns its Pod name. Load into kind with <code>kind load docker-image IMAGE --name fleet</code>, or push to a registry.</li>
+      <li><b>Namespace</b> <code>notes</code> with Pod Security <code>restricted</code>, a ResourceQuota and a LimitRange.</li>
+      <li><b>Config</b>: ConfigMap for settings; Secret for the database password (never committed in plain text).</li>
+      <li><b>Database</b>: Postgres StatefulSet with a headless Service and <code>volumeClaimTemplates</code> (or the CloudNativePG operator for bonus points).</li>
+      <li><b>API</b>: Deployment with startup/readiness/liveness probes, requests and limits, non-root securityContext, a PodDisruptionBudget, topology spread, and an HPA (2–6 replicas at 60% CPU).</li>
+      <li><b>Web</b>: Deployment + Service; <b>Ingress</b> routing <code>/</code> and <code>/api</code>.</li>
+      <li><b>NetworkPolicies</b>: default deny; allow ingress-controller → web/api, api → postgres and redis, plus DNS egress if you deny egress.</li>
+      <li><b>Packaging</b>: everything in a Helm chart <i>or</i> Kustomize base with <code>dev</code> and <code>prod</code> overlays.</li>
+      <li><b>Delivery</b>: manifests in git, synced by Argo CD. CI builds images and bumps the tag.</li>
+      <li><b>Observability</b>: a Grafana dashboard for API latency and error rate, and an alert for crash loops.</li>
+      <li><b>Prove it</b>: kill API Pods during a load test and see no errors; delete the Postgres Pod and confirm notes survive; roll out a broken image and roll back.</li>
+    </ol>
+  </div>
+
+  <details class="solution"><summary>Starter manifest for the API (try on your own first)</summary>
+<pre class="file" data-name="api.yaml">apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: notes
+  labels: { app: api }
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: api } }
+  template:
+    metadata:
+      labels: { app: api }
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile: { type: RuntimeDefault }
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: api } }
+      containers:
+        - name: api
+          image: notes-api:1.0.0
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: api-config }
+          env:
+            - name: DB_PASSWORD
+              valueFrom: { secretKeyRef: { name: db-secret, key: password } }
+          resources:
+            requests: { cpu: 100m, memory: 128Mi }
+            limits: { memory: 256Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          startupProbe:
+            httpGet: { path: /healthz, port: 8080 }
+            failureThreshold: 30
+            periodSeconds: 2
+          readinessProbe:
+            httpGet: { path: /ready, port: 8080 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8080 }
+          volumeMounts: [{ name: tmp, mountPath: /tmp }]
+      volumes: [{ name: tmp, emptyDir: {} }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: api, namespace: notes }
+spec:
+  selector: { app: api }
+  ports: [{ port: 80, targetPort: 8080 }]
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata: { name: api, namespace: notes }
+spec:
+  scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: api }
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 60 } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: api, namespace: notes }
+spec:
+  minAvailable: 1
+  selector: { matchLabels: { app: api } }</pre>
+  </details>
+
+  <div class="takeaways"><h4>Stretch goals</h4><ul>
+    <li>Add cert-manager for real TLS, and External Secrets for the database password.</li>
+    <li>Do a canary release of the API with Gateway API weights or Argo Rollouts.</li>
+    <li>Deploy the same overlay to a managed cluster (EKS, GKE or AKS) and add the Cluster Autoscaler.</li>
+  </ul></div>
+</section>
+
+<!-- ============ FINAL EXAM ============ -->
+<section class="lesson" id="final" data-level="3">
+  <div class="lesson-head"><div class="lesson-no">🎓</div><h2>Final exam</h2></div>
+  <p>Fifteen questions picked at random from the whole course. Score 12 or more to earn your fleet captain’s badge. Press “New exam” for a different set.</p>
+  <div class="quiz" data-quiz="final"></div>
+</section>
+
+<!-- ============ CHEAT SHEET ============ -->
+<section class="lesson" id="cheatsheet" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">📋</div><h2>Cheat sheet</h2></div>
+  <h3>Everyday kubectl</h3>
+  <div class="table-wrap"><table>
+    <tr><td><code>kubectl get pods -o wide -A</code></td><td>Pods in all namespaces with node and IP</td></tr>
+    <tr><td><code>kubectl get all -n NS</code></td><td>Common objects in a namespace</td></tr>
+    <tr><td><code>kubectl describe TYPE NAME</code></td><td>Details and Events</td></tr>
+    <tr><td><code>kubectl apply -f FILE_OR_DIR</code> / <code>-k DIR</code></td><td>Create or update declaratively / with Kustomize</td></tr>
+    <tr><td><code>kubectl delete -f FILE</code></td><td>Delete what a file created</td></tr>
+    <tr><td><code>kubectl diff -f FILE</code></td><td>Preview changes before applying</td></tr>
+    <tr><td><code>kubectl logs POD -f --previous -c C</code></td><td>Logs: follow, crashed run, specific container</td></tr>
+    <tr><td><code>kubectl exec -it POD -- sh</code></td><td>Shell inside a Pod</td></tr>
+    <tr><td><code>kubectl port-forward svc/NAME 8080:80</code></td><td>Reach a Service from your laptop</td></tr>
+    <tr><td><code>kubectl get events --sort-by=.lastTimestamp</code></td><td>What just happened</td></tr>
+    <tr><td><code>kubectl explain pod.spec --recursive</code></td><td>Built-in field documentation</td></tr>
+    <tr><td><code>kubectl run x --image=I --dry-run=client -o yaml</code></td><td>Generate YAML</td></tr>
+  </table></div>
+  <h3>Workloads</h3>
+  <div class="table-wrap"><table>
+    <tr><td><code>kubectl create deployment NAME --image=I --replicas=3</code></td><td>New Deployment</td></tr>
+    <tr><td><code>kubectl scale deploy NAME --replicas=5</code></td><td>Scale</td></tr>
+    <tr><td><code>kubectl set image deploy/NAME CONTAINER=IMAGE</code></td><td>Start a rolling update</td></tr>
+    <tr><td><code>kubectl rollout status|history|undo|restart deploy/NAME</code></td><td>Manage rollouts</td></tr>
+    <tr><td><code>kubectl expose deploy NAME --port=80 --type=ClusterIP</code></td><td>Create a Service</td></tr>
+    <tr><td><code>kubectl autoscale deploy NAME --min=2 --max=6 --cpu-percent=60</code></td><td>Quick HPA</td></tr>
+  </table></div>
+  <h3>Cluster and access</h3>
+  <div class="table-wrap"><table>
+    <tr><td><code>kubectl config get-contexts</code> / <code>use-context X</code></td><td>Switch clusters</td></tr>
+    <tr><td><code>kubectl config set-context --current --namespace=NS</code></td><td>Default namespace</td></tr>
+    <tr><td><code>kubectl cordon|drain|uncordon NODE</code></td><td>Node maintenance</td></tr>
+    <tr><td><code>kubectl taint node NODE key=val:NoSchedule</code></td><td>Taint a node (add <code>-</code> at the end to remove)</td></tr>
+    <tr><td><code>kubectl top nodes</code> / <code>top pods</code></td><td>Live usage (metrics-server)</td></tr>
+    <tr><td><code>kubectl auth can-i VERB RESOURCE --as=USER</code></td><td>Check permissions</td></tr>
+  </table></div>
+  <h3>Pod status decoder</h3>
+  <div class="table-wrap"><table>
+    <tr><th>Status</th><th>First thing to check</th></tr>
+    <tr><td>Pending</td><td><code>describe</code>: resources, PVC binding, taints, nodeSelector</td></tr>
+    <tr><td>ContainerCreating (stuck)</td><td><code>describe</code>: volume mounts, missing ConfigMap or Secret</td></tr>
+    <tr><td>ImagePullBackOff / ErrImagePull</td><td>Image name, tag, registry credentials</td></tr>
+    <tr><td>CrashLoopBackOff</td><td><code>logs --previous</code>, exit code, liveness probe</td></tr>
+    <tr><td>OOMKilled</td><td>Memory limit too low or a leak</td></tr>
+    <tr><td>Running but 0/1 Ready</td><td>Readiness probe failing</td></tr>
+    <tr><td>Terminating (stuck)</td><td>Finalizers, or a node that’s gone</td></tr>
+  </table></div>
+</section>
+
+<!-- ============ GLOSSARY ============ -->
+<section class="lesson" id="glossary" data-level="1">
+  <div class="lesson-head"><div class="lesson-no">📖</div><h2>Glossary</h2></div>
+  <div class="table-wrap"><table>
+    <tr><th>Word</th><th>Simple meaning</th></tr>
+    <tr><td>Cluster</td><td>A set of machines (nodes) run by one control plane.</td></tr>
+    <tr><td>Node</td><td>One machine, physical or virtual, that runs Pods.</td></tr>
+    <tr><td>Control plane</td><td>The brain: API server, etcd, scheduler, controllers.</td></tr>
+    <tr><td>kubelet</td><td>Agent on each node that runs its Pods.</td></tr>
+    <tr><td>Pod</td><td>Smallest unit: one or more containers sharing IP and storage.</td></tr>
+    <tr><td>Deployment</td><td>Keeps N identical Pods running and handles updates.</td></tr>
+    <tr><td>ReplicaSet</td><td>Keeps the Pod count right; managed by a Deployment.</td></tr>
+    <tr><td>Service</td><td>Stable name and IP that load balances to Pods.</td></tr>
+    <tr><td>Ingress / Gateway</td><td>HTTP routing from outside into Services.</td></tr>
+    <tr><td>Namespace</td><td>A named room that groups and separates objects.</td></tr>
+    <tr><td>Label / selector</td><td>Sticker on objects / a question that finds stickers.</td></tr>
+    <tr><td>ConfigMap / Secret</td><td>Settings / sensitive values given to Pods.</td></tr>
+    <tr><td>PV / PVC / StorageClass</td><td>Storage / a request for storage / how to make it.</td></tr>
+    <tr><td>StatefulSet</td><td>Pods with stable names and their own storage.</td></tr>
+    <tr><td>DaemonSet</td><td>One Pod on every (matching) node.</td></tr>
+    <tr><td>Job / CronJob</td><td>Run to completion / on a schedule.</td></tr>
+    <tr><td>Probe</td><td>Health check: startup, readiness, liveness.</td></tr>
+    <tr><td>Request / limit</td><td>Guaranteed resources / hard maximum.</td></tr>
+    <tr><td>Taint / toleration</td><td>Node “keep out” sign / Pod permission to ignore it.</td></tr>
+    <tr><td>HPA</td><td>Adds or removes Pods based on metrics.</td></tr>
+    <tr><td>RBAC</td><td>Who may do what in the API.</td></tr>
+    <tr><td>NetworkPolicy</td><td>Firewall rules between Pods.</td></tr>
+    <tr><td>Helm / Kustomize</td><td>Templated packages / layered YAML patches.</td></tr>
+    <tr><td>CRD / operator</td><td>New object type / controller with expert logic for it.</td></tr>
+    <tr><td>GitOps</td><td>Git as source of truth, synced into the cluster by an agent.</td></tr>
+    <tr><td>Reconciliation</td><td>The loop that makes actual state match desired state.</td></tr>
+  </table></div>
+  <h3>Where to go next</h3>
+  <p>The official documentation at kubernetes.io (especially the Tasks and Concepts sections) is excellent. If you want a certificate, the CKAD (developer) and CKA (administrator) exams are hands-on and closely match the labs in this course. Keep practising by deploying every side project to your local cluster.</p>
+</section>
+
+<footer>
+  <p>Fleet School: a hands-on Kubernetes course. Progress and quiz scores are saved only in this browser. Written for Kubernetes 1.30–1.31 with kind; tools, chart names and install URLs change over time, so check official docs if something behaves differently.</p>
+  <button class="icon-btn" id="resetBtn">Reset my progress</button>
+</footer>
+</div><!-- /wrap -->
+</main>
+</div><!-- /layout -->
+<script>
+(function(){
+"use strict";
+const Q = {
+1:[["What does Kubernetes mainly do?",["Builds container images","Orchestrates containers across many machines","Replaces Linux","Writes YAML for you"],1,"Kubernetes schedules, heals, scales and connects containers across a cluster."],
+   ["“Declarative” means you…",["Type every step yourself","Describe the end state you want and let controllers achieve it","Restart Pods by hand","Use only the command line"],1,"You declare desired state; reconciliation loops keep reality matching it."],
+   ["When is Docker Compose often a better fit than Kubernetes?",["A small app on a single server","Hundreds of microservices","Multi-region high availability","Autoscaling across many nodes"],0,"Kubernetes adds complexity that pays off at scale; small single-host apps rarely need it."]],
+2:[["Which component stores the entire cluster state?",["kubelet","etcd","kube-proxy","scheduler"],1,"etcd is the cluster’s consistent key-value store. Back it up."],
+   ["Which component decides which node a new Pod runs on?",["kube-scheduler","kubelet","etcd","Ingress"],0,"The scheduler picks a node based on resources and constraints."],
+   ["What runs on every worker node?",["etcd and the API server","kubelet, kube-proxy and a container runtime","Only Pods","Argo CD"],1,"These three let a node run Pods and route Service traffic."]],
+3:[["What tool do you use to talk to a cluster?",["docker","kubectl","kubeadm only","helm only"],1,"kubectl sends requests to the API server."],
+   ["Where does kubectl find which cluster to talk to?",["/etc/hosts","~/.kube/config (kubeconfig)","Docker Hub","The Dockerfile"],1,"kubeconfig holds clusters, users and contexts."],
+   ["Which command shows built-in docs for a field?",["kubectl help pod","kubectl explain pod.spec","kubectl docs","kubectl man"],1,"kubectl explain documents any resource field, offline."]],
+4:[["What do containers in the same Pod share?",["Nothing","Network (IP, localhost) and optionally volumes","Only the image","Their node’s hostname only"],1,"Containers in a Pod share an IP and can share volumes."],
+   ["You delete a bare Pod you created with kubectl apply. What happens?",["It is recreated automatically","It stays deleted","The node reboots","The image is deleted"],1,"Only controllers like Deployments recreate Pods."],
+   ["What is an init container?",["A container that runs to completion before app containers start","The first app container","A container for logs","A base image"],0,"Init containers handle setup like waiting for dependencies."]],
+5:[["How does a Service find its Pods?",["By Pod name","By label selector","By IP list you type","By namespace only"],1,"Labels and selectors are the glue between Kubernetes objects."],
+   ["Two Pods named web can exist if…",["They’re on different nodes","They’re in different namespaces","Never","They use different images"],1,"Names are unique per namespace."],
+   ["By default, can Pods in different namespaces talk over the network?",["No, namespaces block traffic","Yes, unless NetworkPolicies prevent it","Only via Ingress","Only on the same node"],1,"Namespaces don’t isolate network traffic by themselves."]],
+6:[["What does a ReplicaSet do?",["Builds images","Keeps a set number of matching Pods running","Routes HTTP traffic","Stores secrets"],1,"It counts Pods by label and creates or deletes to match replicas."],
+   ["Why use a Deployment instead of a ReplicaSet directly?",["Deployments add rolling updates and rollbacks","ReplicaSets are deprecated","Deployments are faster","ReplicaSets can’t scale"],0,"Deployments manage ReplicaSets per version, enabling safe updates."],
+   ["What must selector.matchLabels match in a Deployment?",["The namespace","The Pod template’s labels","The node labels","The image name"],1,"Otherwise the API rejects it, or the controller couldn’t find its Pods."]],
+7:[["Which Service type is reachable only inside the cluster?",["NodePort","LoadBalancer","ClusterIP","ExternalName"],2,"ClusterIP is the default internal type."],
+   ["A Service has no endpoints. Most likely cause?",["Selector doesn’t match any ready Pod labels","Too many replicas","Wrong namespace name in the image","etcd is full"],0,"Check labels, selector and readiness."],
+   ["From namespace a, how do you reach Service web in namespace b?",["web","web.b","b.web","localhost:web"],1,"Use NAME.NAMESPACE (or the full .svc.cluster.local form)."]],
+8:[["What triggers a rolling update?",["Changing replicas","Changing the Pod template (e.g. image)","Adding a label to the Deployment metadata","Running kubectl get"],1,"Template changes create a new ReplicaSet."],
+   ["maxUnavailable: 0 means…",["No Pods may be running","Ready Pods never drop below the desired count during the update","Updates are disabled","Only one Pod at a time"],1,"New Pods must become ready before old ones are removed."],
+   ["How do you undo a bad rollout?",["kubectl delete deployment","kubectl rollout undo deployment/NAME","Reinstall Kubernetes","kubectl scale --replicas=0"],1,"Rollback switches to the previous ReplicaSet."]],
+9:[["Are Kubernetes Secrets encrypted by default?",["Yes, always","No, they are base64-encoded; enable encryption at rest and RBAC","Only in kind","Only if named secret"],1,"Base64 is encoding, not encryption."],
+   ["You change a ConfigMap. What updates without a restart?",["Env vars from it","Files mounted from it (after a short delay)","Both","Neither"],1,"Mounted files refresh; env vars are fixed at container start."],
+   ["What is a ConfigMap for?",["Passwords","Non-sensitive configuration","Container images","Node lists"],1,"Use Secrets for sensitive values."]],
+10:[["What is a PersistentVolumeClaim?",["A real disk","A request for storage by an app","A backup","A node label"],1,"PVCs request storage; PVs fulfill it."],
+   ["What does a StorageClass enable?",["Dynamic provisioning of volumes","Image builds","Ingress routing","RBAC"],0,"It describes how to create PVs on demand."],
+   ["Which volume disappears when the Pod is deleted?",["persistentVolumeClaim","emptyDir","A Retain PV","A cloud disk"],1,"emptyDir lives only as long as the Pod."]],
+11:[["What is needed for an Ingress object to work?",["Nothing else","An Ingress controller running in the cluster","A StatefulSet","A NodePort per path"],1,"The controller reads Ingress rules and routes traffic."],
+   ["Ingress mainly routes by…",["CPU usage","Host name and URL path","Pod age","Namespace labels"],1,"HTTP host and path rules send traffic to Services."],
+   ["What is the Gateway API?",["A cloud product","The newer, more expressive successor to Ingress","A database","A Helm chart"],1,"Gateway, HTTPRoute and friends support features like weighted traffic."]],
+12:[["A readiness probe fails. What happens?",["Container restarts","Pod is removed from Service endpoints until it passes","Node reboots","Pod is deleted"],1,"Readiness controls traffic, not restarts."],
+   ["A container exceeds its memory limit. What happens?",["It’s throttled","It’s OOMKilled","Nothing","The node adds memory"],1,"Memory over the limit kills the container. CPU over the limit throttles."],
+   ["What does the scheduler use to place a Pod?",["Limits","Requests","Probes","Labels only"],1,"Requests are reserved capacity used for scheduling."]],
+13:[["Which workload gives Pods stable names and their own storage?",["Deployment","StatefulSet","DaemonSet","Job"],1,"StatefulSets give db-0, db-1… each with its own PVC."],
+   ["Which workload runs one Pod on every node?",["DaemonSet","ReplicaSet","CronJob","Deployment"],0,"Used for log agents, monitoring, network plugins."],
+   ["Which runs a task on a schedule?",["Job","CronJob","DaemonSet","StatefulSet"],1,"CronJobs create Jobs on a cron schedule."]],
+14:[["A Pod is Pending. Best first step?",["kubectl logs","kubectl describe pod and read Events","Delete the node","Rebuild the image"],1,"Events explain scheduling problems like insufficient resources."],
+   ["How do you see logs from the previous crashed container?",["kubectl logs POD --previous","kubectl logs --old","kubectl history","kubectl events --logs"],0,"--previous shows the last terminated container’s output."],
+   ["ImagePullBackOff usually means…",["Out of memory","Wrong image name/tag or missing registry credentials","Probe failure","Wrong Service port"],1,"Check the image reference and imagePullSecrets."]],
+15:[["What does a taint with effect NoSchedule do?",["Attracts Pods","Keeps Pods without a matching toleration off the node","Deletes the node","Adds CPU"],1,"Tolerations grant permission to schedule there."],
+   ["Which keeps replicas balanced across zones?",["topologySpreadConstraints","imagePullPolicy","ResourceQuota","Ingress"],0,"Spread constraints limit skew across topology domains."],
+   ["What does kubectl drain do?",["Deletes all nodes","Cordons the node and evicts its Pods safely","Empties etcd","Removes volumes"],1,"Used before maintenance; PDBs are respected."]],
+16:[["The HPA needs which of these to scale on CPU?",["metrics-server and CPU requests","A StatefulSet","An Ingress","Helm"],0,"Utilisation is measured relative to requests, using metrics-server data."],
+   ["Which adds new nodes when Pods can’t fit?",["HPA","VPA","Cluster Autoscaler / Karpenter","kube-proxy"],2,"Node autoscalers react to Pending Pods."],
+   ["Which tool can scale on events and down to zero?",["KEDA","kubectl top","etcd","CoreDNS"],0,"KEDA scales on queues, streams and more."]],
+17:[["A RoleBinding connects…",["Pods to nodes","A subject (user/ServiceAccount) to a Role","Services to Pods","Images to registries"],1,"Subject + binding + role = permission."],
+   ["Which setting prevents running as root?",["runAsNonRoot: true","privileged: true","hostNetwork: true","replicas: 0"],0,"Combine with allowPrivilegeEscalation: false and dropped capabilities."],
+   ["What does a default-deny NetworkPolicy do?",["Blocks the API server","Blocks traffic to selected Pods unless another policy allows it","Deletes Pods","Stops DNS cluster-wide"],1,"Then add narrow allow rules."]],
+18:[["Helm’s values.yaml is used to…",["Store logs","Fill in template blanks","Define RBAC only","Run tests"],1,"Values customise chart templates per install."],
+   ["Kustomize works by…",["Templating with {{ }}","Layering overlays and patches on plain YAML","Compiling Go","Pulling from Docker Hub"],1,"No templating language; base + overlays."],
+   ["How do you roll back a Helm release?",["helm rollback NAME REVISION","kubectl undo helm","helm delete --old","helm restart"],0,"Helm tracks revisions of each release."]],
+19:[["Where should containerised apps write logs?",["A file inside the container only","stdout/stderr","etcd","A ConfigMap"],1,"The platform captures stdout/stderr and agents ship it."],
+   ["What does Prometheus mainly collect?",["Traces","Metrics, by scraping endpoints","Container images","Secrets"],1,"It scrapes /metrics and stores time series."],
+   ["Which are the four golden signals?",["CPU, RAM, disk, network","Latency, traffic, errors, saturation","Pods, nodes, services, ingresses","Logs, metrics, traces, alerts"],1,"They reflect what users actually experience."]],
+20:[["In GitOps, what is the source of truth?",["The live cluster","A git repository","A developer’s laptop","The CI server"],1,"An agent syncs the cluster to git and reverts drift."],
+   ["What does a CRD do?",["Adds a new object type to the Kubernetes API","Creates a node","Encrypts secrets","Builds images"],0,"Custom Resource Definitions extend the API."],
+   ["An operator is…",["A human admin","A custom controller with expert logic for an application","A kubectl plugin only","A type of Service"],1,"It runs a reconciliation loop for its custom resources."]]
+};
+
+const store = {
+  get(k,d){ try{ const v = localStorage.getItem("k8s:"+k); return v===null?d:JSON.parse(v);}catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem("k8s:"+k, JSON.stringify(v)); }catch(e){} }
+};
+
+/* ---------- terminal & file blocks ---------- */
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+document.querySelectorAll("pre.sh, pre.file").forEach(pre=>{
+  const isSh = pre.classList.contains("sh");
+  const raw = pre.textContent;
+  const lines = raw.replace(/^\n/,"").split("\n");
+  let html = "";
+  if(isSh){
+    let cont = false;
+    html = lines.map(l=>{
+      if(l.startsWith("$ ")){ cont = /\\$/.test(l); return '<span class="p">$</span> '+esc(l.slice(2)); }
+      if(cont){ cont = /\\$/.test(l); return esc(l); }
+      if(/^\s*#/.test(l)) return '<span class="c">'+esc(l)+'</span>';
+      return '<span class="o">'+esc(l)+'</span>';
+    }).join("\n");
+  } else {
+    html = lines.map(l=>{
+      const m = l.match(/^(.*?)(\s#\s.*|^#.*)$/);
+      if(/^\s*#/.test(l)) return '<span class="c">'+esc(l)+'</span>';
+      if(m && !/["'].*#.*["']/.test(l)) return esc(m[1])+'<span class="c">'+esc(m[2])+'</span>';
+      return esc(l);
+    }).join("\n");
+  }
+  const box = document.createElement("div");
+  box.className = "term";
+  const label = isSh ? "terminal" : (pre.dataset.name || "file");
+  box.innerHTML = '<div class="bar"><i></i><i></i><i></i><span>'+esc(label)+'</span></div>';
+  const btn = document.createElement("button");
+  btn.className = "copy"; btn.type = "button"; btn.textContent = "Copy";
+  btn.setAttribute("aria-label","Copy "+label+" contents");
+  btn.addEventListener("click", async ()=>{
+    let text;
+    if(isSh){
+      const out=[]; let cont=false;
+      lines.forEach(l=>{ if(l.startsWith("$ ")){ out.push(l.slice(2)); cont=/\\$/.test(l);} else if(cont){ out.push(l); cont=/\\$/.test(l);} });
+      text = out.join("\n");
+    } else text = lines.join("\n");
+    try{ await navigator.clipboard.writeText(text); btn.textContent="Copied ✓"; }
+    catch(e){ btn.textContent="Select & copy"; }
+    setTimeout(()=>btn.textContent="Copy",1600);
+  });
+  const newPre = document.createElement("pre");
+  newPre.innerHTML = html;
+  box.appendChild(btn); box.appendChild(newPre);
+  pre.replaceWith(box);
+});
+
+/* ---------- quizzes ---------- */
+function renderQuiz(el, questions, key, title){
+  el.innerHTML = "";
+  const head = document.createElement("div"); head.className="quiz-head";
+  head.innerHTML = '<span>❓ '+title+'</span><span class="qcount">'+questions.length+' questions</span>';
+  const body = document.createElement("div"); body.className="quiz-body";
+  el.append(head, body);
+  let answered = 0, correct = 0;
+  const score = document.createElement("div"); score.className="quiz-score"; score.setAttribute("aria-live","polite");
+  questions.forEach((q,qi)=>{
+    const wrap = document.createElement("div"); wrap.className="q";
+    const qt = document.createElement("div"); qt.className="qt"; qt.textContent=(qi+1)+". "+q[0];
+    const opts = document.createElement("div"); opts.className="opts";
+    const ex = document.createElement("div"); ex.className="explain";
+    q[1].forEach((o,oi)=>{
+      const b = document.createElement("button"); b.type="button"; b.className="opt"; b.textContent=o;
+      b.addEventListener("click", ()=>{
+        opts.querySelectorAll(".opt").forEach(x=>x.disabled=true);
+        const right = oi===q[2];
+        b.classList.add(right?"right":"wrong");
+        opts.children[q[2]].classList.add("right");
+        ex.innerHTML = (right?"<b>Correct!</b> ":"<b>Not quite.</b> ")+esc(q[3]);
+        ex.classList.add("show");
+        answered++; if(right) correct++;
+        if(answered===questions.length){
+          const pct = Math.round(correct/questions.length*100);
+          let msg = pct===100?"Perfect score! 🏆":pct>=67?"Nice work! ⭐":"Worth another look at this lesson. 🔁";
+          if(key==="final") msg = correct>=12 ? "You passed. Welcome aboard, Fleet Captain! 🎓⚓" : "Not yet. Review the lessons you missed and try a new exam. 💪";
+          score.innerHTML = "You scored "+correct+" / "+questions.length+". "+msg;
+          score.classList.add("show");
+          if(key!=="final"){ const s=store.get("scores",{}); s[key]=Math.max(s[key]||0,correct); store.set("scores",s); }
+        }
+      });
+      opts.appendChild(b);
+    });
+    wrap.append(qt,opts,ex); body.appendChild(wrap);
+  });
+  body.appendChild(score);
+  const row = document.createElement("div"); row.className="done-row";
+  const retry = document.createElement("button"); retry.type="button"; retry.className="icon-btn";
+  retry.textContent = key==="final" ? "New exam" : "Try again";
+  retry.addEventListener("click", ()=> key==="final" ? buildFinal(el) : renderQuiz(el, questions, key, title));
+  row.appendChild(retry);
+  const best = store.get("scores",{})[key];
+  if(best!==undefined && key!=="final"){ const s=document.createElement("span"); s.style.color="var(--muted)"; s.style.fontSize=".9rem"; s.textContent="Your best so far: "+best+"/"+questions.length; row.appendChild(s); }
+  body.appendChild(row);
+}
+function buildFinal(el){
+  const pool=[]; Object.keys(Q).forEach(k=>Q[k].forEach(q=>pool.push(q)));
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  renderQuiz(el, pool.slice(0,15), "final", "Final exam");
+}
+document.querySelectorAll(".quiz[data-quiz]").forEach(el=>{
+  const k = el.dataset.quiz;
+  if(k==="final") buildFinal(el); else renderQuiz(el, Q[k], k, "Quick quiz: lesson "+k);
+});
+
+/* ---------- progress ---------- */
+const TOTAL = 20;
+function refreshProgress(){
+  const done = store.get("done",[]);
+  document.querySelectorAll(".sidebar a[data-l]").forEach(a=>a.classList.toggle("done", done.includes(a.dataset.l)));
+  document.querySelectorAll(".mark-done").forEach(b=>{
+    const d = done.includes(b.dataset.done);
+    b.classList.toggle("is-done", d);
+    b.textContent = d ? "✓ Completed" : "Mark lesson complete";
+    b.setAttribute("aria-pressed", d ? "true" : "false");
+  });
+  document.getElementById("progFill").style.width = (done.length/TOTAL*100)+"%";
+  document.getElementById("progTxt").textContent = done.length+"/"+TOTAL;
+}
+document.querySelectorAll(".mark-done").forEach(b=>b.addEventListener("click",()=>{
+  let done = store.get("done",[]);
+  const id = b.dataset.done;
+  done = done.includes(id) ? done.filter(x=>x!==id) : done.concat(id);
+  store.set("done",done); refreshProgress();
+}));
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  if(confirm("Clear your completed lessons and quiz scores in this browser?")){ store.set("done",[]); store.set("scores",{}); location.reload(); }
+});
+refreshProgress();
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+const savedTheme = store.get("theme",null);
+if(savedTheme) root.setAttribute("data-theme",savedTheme);
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur = root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  const next = cur==="dark"?"light":"dark";
+  root.setAttribute("data-theme",next); store.set("theme",next);
+});
+
+/* ---------- mobile menu ---------- */
+const sb = document.getElementById("sidebar");
+document.getElementById("menuBtn").addEventListener("click",()=>sb.classList.toggle("open"));
+sb.addEventListener("click",e=>{ if(e.target.closest("a")) sb.classList.remove("open"); });
+
+/* ---------- active lesson in sidebar ---------- */
+const links = {}; sb.querySelectorAll("a[href^='#']").forEach(a=>links[a.getAttribute("href").slice(1)]=a);
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(en=>{ if(en.isIntersecting){ Object.values(links).forEach(a=>a.classList.remove("active")); const a=links[en.target.id]; if(a) a.classList.add("active"); } });
+},{rootMargin:"-30% 0px -65% 0px"});
+document.querySelectorAll("main section[id]").forEach(s=>obs.observe(s));
+
+/* ---------- reduced motion: pause SMIL ---------- */
+if(matchMedia("(prefers-reduced-motion: reduce)").matches){
+  document.querySelectorAll("svg").forEach(s=>{ try{ s.pauseAnimations(); }catch(e){} });
+}
+})();
+</script>
+</body>
+</html>
